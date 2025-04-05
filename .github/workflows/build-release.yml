@@ -17,6 +17,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Clean previous builds
+      run: |
+        rm -rf build/ dist/ __pycache__/
+      shell: bash  # 关键修复：强制使用 Bash 解释器
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
@@ -26,23 +31,19 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-    
         
     - name: Build EXE with PyInstaller
       run: |
-        # 关键修改：用 --console 代替 --windowed 保留控制台
-        # 在 PyInstaller 命令前添加清理步骤
-        rm -rf build/ dist/ __pycache__/
-        pyinstaller --onefile --console ok_school_life.py
-        # 明确验证 EXE 文件
-        dir dist\  # Windows 环境使用 dir
-        echo "EXE Path: ${{ github.workspace }}\dist\ok_school_life.exe"
-        
+        pyinstaller --onefile --console ok_school_life.py  # 保留控制台
+        echo "=== 生成文件验证 ==="
+        dir dist\
+        echo "===================="
+
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: windows-exe
-        path: dist/ok_school_life.exe  # 明确指定文件名
+        path: dist/ok_school_life.exe  # 精确指定文件名
 
   create-release:
     name: Create Release
@@ -56,16 +57,14 @@ jobs:
         name: windows-exe
         path: release-files
         
-    - name: Verify Files (Debug)
+    - name: Verify EXE file
       run: |
         echo "=== 文件列表 ==="
         ls -R release-files
-        echo "==============="
-        # 确保文件存在
         if [ -f "release-files/ok_school_life.exe" ]; then
-          echo "EXE 文件存在"
+          echo "✅ EXE 文件存在"
         else
-          echo "错误：EXE 文件未找到！"
+          echo "❌ 错误：EXE 文件未找到！"
           exit 1
         fi
         
@@ -74,6 +73,6 @@ jobs:
       with:
         tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
-        body: "自动打包为exe"
-        artifacts: "release-files/ok_school_life.exe"  # 直接指定确切路径
+        body: "Automated EXE release"
+        artifacts: "release-files/ok_school_life.exe"  # 精确匹配文件
         token: ${{ secrets.GITHUB_TOKEN }}
