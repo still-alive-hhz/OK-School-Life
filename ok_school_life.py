@@ -39,9 +39,20 @@ random_event_list = ['**你在学校的食堂吃饭，发现菜品很差，你�
 last_event = None
 
 def start():
-    print("欢迎来到OK School Life beta v0.2.0！")
+    print("欢迎来到OK School Life beta v0.2！")
     print("你将经历不同的事件和选择，看看你的学校生活会如何发展。")
-    input("按回车以开始游戏")
+    tostart = input("按“1”以开始游戏，按“2”以退出：")
+    if tostart == "1":
+        print("游戏开始！")
+        main()
+    elif tostart == "2":
+        print("感谢游玩，期待下次再见！")
+        sys.exit()
+    else:
+        print("无效的输入，请重新输入。")
+        start()
+
+def main():    
     start_event = random.choices(event_list, weights=[0.2, 0.5, 0.3])[0]
     print(f"{start_event}。\n你中考考得很好，现在可以选择学校。")
     print("1.羊县中学")
@@ -61,7 +72,7 @@ def start():
         elif choice == "3":
             print("你选择了汗中市龙港高级中学。")
             if start_event == event_list[2]:
-                print("因为你家境贫寒，直接破产了！\n游戏结束。")
+                print("你家境贫寒，直接破产了！\n游戏结束。")
                 exit()
             event_3()    
             break
@@ -343,6 +354,6 @@ def random_event():
 
 start()
 
-# Version beta 0.2.0
+# Version beta 0.2.3
 # Designed by Still_Alive with Github Copilot
-# 2025.04.05
+# 2025.04.06
