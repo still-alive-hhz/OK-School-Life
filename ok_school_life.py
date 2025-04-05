@@ -285,6 +285,6 @@ def random_event():
 
 start()
 
-# Version beta 0.1.1
+# Version beta 0.1.2
 # Designed by Still_Alive with Github Copilot
-# 2025.04.04
+# 2025.04.05
