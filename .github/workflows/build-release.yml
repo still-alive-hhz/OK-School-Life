@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write  # 必须的权限
+  contents: write
 
 jobs:
   build-exe:
@@ -29,14 +29,17 @@ jobs:
         
     - name: Build EXE with PyInstaller
       run: |
-        pyinstaller --onefile --windowed ok_school_life.py
-        ls dist/  # 验证 EXE 文件名
+        # 关键修改：用 --console 代替 --windowed 保留控制台
+        pyinstaller --onefile --console ok_school_life.py
+        # 明确验证 EXE 文件
+        dir dist\  # Windows 环境使用 dir
+        echo "EXE Path: ${{ github.workspace }}\dist\ok_school_life.exe"
         
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: windows-exe
-        path: dist/
+        path: dist/ok_school_life.exe  # 明确指定文件名
 
   create-release:
     name: Create Release
@@ -48,19 +51,26 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: windows-exe
-        path: release-files  # 下载到明确命名的目录
+        path: release-files
         
     - name: Verify Files (Debug)
       run: |
-        echo "=== 下载的文件列表 ==="
+        echo "=== 文件列表 ==="
         ls -R release-files
-        echo "===================="
+        echo "==============="
+        # 确保文件存在
+        if [ -f "release-files/ok_school_life.exe" ]; then
+          echo "EXE 文件存在"
+        else
+          echo "错误：EXE 文件未找到！"
+          exit 1
+        fi
         
     - name: Create GitHub Release
       uses: ncipollo/release-action@v1
       with:
-        tag: ${{ github.ref_name }}  # 直接使用标签名（如 v1.0.0）
+        tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
         body: "Automated EXE release"
-        artifacts: "release-files/*.exe"  # 通配符匹配所有 EXE
+        artifacts: "release-files/ok_school_life.exe"  # 直接指定确切路径
         token: ${{ secrets.GITHUB_TOKEN }}
