@@ -74,6 +74,6 @@ jobs:
       with:
         tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
-        body: "Automated EXE release"
+        body: "自动打包为exe"
         artifacts: "release-files/ok_school_life.exe"  # 直接指定确切路径
         token: ${{ secrets.GITHUB_TOKEN }}
