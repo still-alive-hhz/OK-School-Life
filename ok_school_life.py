@@ -32,7 +32,9 @@ random_event_list = ['**你在学校的食堂吃饭，发现菜品很差，你�
                      '**老师打开PPT，念稿40分钟，语速极慢，字还特别小。你会？',
                      '**放学时突然下起大雨，你没带伞，你会？',
                      '**你这周要负责扫地，但今天作业太多，你想偷个懒。你会？',
-                     '',
+                     '**地理课，老师问：同学们，你们猜我是我们老李家第几代教书匠？',
+                     '**遇到老师，你选择低头.老师走近问你为什么不给她打招呼。你会？',
+                     '**校园传奇浴室，看到一群烟哥在吸烟，你会？',
                      ]
 last_event = None
 
@@ -286,11 +288,26 @@ def random_event():
                    "2": "你选择了淋雨冲回家，冲凉省了。\n你第二天就发烧了，无法继续学习！",
                    "3": "你选择了在校门口避雨，顺便反思为何不看天气预报。\n你在风雨中多想了很多，也许成长就是这样被迫发生的。"}
     elif random_event_choice == random_event_list[21]:
-        print("1.找朋友帮忙，周末请ta喝饮料\n2.装作忘记，等老师点名再说\n3.准时去扫，边扫边抱怨制度不合理")
+        print("1.找朋友帮忙，周末请ta喝饮料\n2.装作忘记，等老师点名再说\n3.拖延去扫，边扫边抱怨制度不合理")
         choices = {"1": "你选择了找朋友帮忙。\n朋友满脸不情愿，但还是答应了。这种人情债，你记在心里了。",
                    "2": "你选择了装作忘记。\n老师点名了，你被扣分了。",
-                   "3": "你选择了准时去扫。\n你涉嫌颠覆学校制度罪，被开除了！"}
-        
+                   "3": "你选择了边扫边抱怨制度不合理。\n你涉嫌颠覆学校制度罪，被开除了！"}
+    elif random_event_choice == random_event_list[22]:
+        print("1.你是老李家第二代教书匠\n2.你是老李家第三代教书匠\n3.你是老李家第四代教书匠")
+        choices = {"1": "你选择了你是老李家第二代教书匠。\n老师冷笑着说：你低估了我们的家族实力。",
+                   "2": "你选择了你是老李家第三代教书匠。\n老师说：我不是第三代教书匠，但我是三分之一。",
+                   "3": "你选择了你是老李家第四代教书匠。\n老师说夸你聪明，给你加了分。"}
+    elif random_event_choice == random_event_list[23]:
+        print("1.低头\n2.微笑\n3.说：我没有看到人")
+        choices = {"1": "你选择了低头。\n老师说：下次记得打招呼。",
+                   "2": "你选择了微笑。\n老师看你无奈，原谅了你。",
+                   "3": "你选择了说：我没有看到人。\n老师生气地说：我不是人吗？请来了你的家长。"}
+    elif random_event_choice == random_event_list[24]:
+        print("1.私下向校长举报\n2.直接开骂\n3.微笑着说：我也来一根\n4.无视")
+        choices = {"1":"你选择了私下向校长举报。\n校长高度赞赏你的行为，并在大会上让你上台领奖。",
+                   "2": "你选择了直接开骂。\n烟哥一人一根烟头把你烫没了！",
+                   "3": "你选择了微笑着说：我也来一根。\n你们一起吸烟，被老师发现了，心情很不好。",
+                   "4": "你选择了无视。\n好像什么也没有发生。"}
     else:
         return
     
@@ -314,7 +331,9 @@ def random_event():
                 random_event_choice == random_event_list[18] and choice == "1" or \
                 random_event_choice == random_event_list[19] and choice == "2" or \
                 random_event_choice == random_event_list[20] and choice == "2" or \
-                random_event_choice == random_event_list[21] and choice == "3":
+                random_event_choice == random_event_list[21] and choice == "3" or \
+                random_event_choice == random_event_list[23] and choice == "3" or \
+                random_event_choice == random_event_list[24] and choice == "2":
                 print("游戏结束。")
             else:
                 random_event()
