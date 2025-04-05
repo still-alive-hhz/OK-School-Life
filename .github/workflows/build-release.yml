@@ -26,10 +26,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
+    
         
     - name: Build EXE with PyInstaller
       run: |
         # 关键修改：用 --console 代替 --windowed 保留控制台
+        # 在 PyInstaller 命令前添加清理步骤
+        rm -rf build/ dist/ __pycache__/
         pyinstaller --onefile --console ok_school_life.py
         # 明确验证 EXE 文件
         dir dist\  # Windows 环境使用 dir
