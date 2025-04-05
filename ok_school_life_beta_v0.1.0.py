@@ -55,6 +55,9 @@ def start():
             break
         elif choice == "3":
             print("你选择了汗中市龙港高级中学。")
+            if start_event == event_list[2]:
+                print("因为你家境贫寒，直接破产了！\n游戏结束。")
+                exit()
             break
         else:
             print("无效的选择，请重新输入。")
@@ -282,6 +285,6 @@ def random_event():
 
 start()
 
-# Version beta 0.1
+# Version beta 0.1.1
 # Designed by Still_Alive with Github Copilot
 # 2025.04.04
