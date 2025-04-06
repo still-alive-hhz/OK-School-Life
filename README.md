@@ -13,8 +13,12 @@
 - 📚 **25+随机事件**：涵盖学习、社交、生活各方面
 - 💀 **多结局系统**：包括被开除、住院、顺利毕业等
 - 😂 **黑色幽默**：各种离谱又真实的校园梗
+- 所有事件来自真实事件
 
 ## 🚀 快速开始
+
+如果你有python环境，使用git来下载此仓库
+
 
 ```bash
 # 需要Python 3.x
@@ -22,6 +26,8 @@ git clone https://github.com/still-alive-hhz/OK-School-Life.git
 cd ok-school-life
 python ok-school-life.py
 ```
+
+[直接下载游戏脚本](https://github.com/ff9d0362-7cad-4f06-8527-6efaf9ea21f5)然后在控制台运行
 
 ## 🎯 游戏玩法
 
@@ -50,8 +56,13 @@ python ok-school-life.py
 目前处于Beta版本
 
 ## TO-DO
-- 图形化界面
-- 
+
+* [ ]  图形化界面
+* [ ]  安卓适配和打包apk
+* [ ]  增添更多内容
+* [ ]  实现web游玩此python
+* [ ]  对exe进行标准化设置图标等
+* [ ]
 
 ## 👨‍💻 开发者
 
@@ -59,6 +70,4 @@ Still_Alive with GitHub Copilot
 
 WaiJade with his clever brain
 
-
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)
