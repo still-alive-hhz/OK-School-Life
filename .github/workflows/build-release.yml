@@ -10,9 +10,17 @@ permissions:
 
 jobs:
   build-exe:
-    name: Build EXE
+    name: Build EXE (${{ matrix.arch }})
     runs-on: windows-latest
-    
+    strategy:
+      matrix:
+        arch: [x64, x86]
+        include:
+          - arch: x64
+            python_arch: x64
+          - arch: x86
+            python_arch: x86
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -26,6 +34,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: '3.10'
+        architecture: ${{ matrix.python_arch }}
         
     - name: Install dependencies
       run: |
@@ -41,17 +50,17 @@ jobs:
 
     - name: Rename EXE file
       run: |
-        $version = $env:GITHUB_REF_NAME.Substring(1)  # Remove 'v' prefix from tag
-        $newName = "ok_school_life-windows-x64-$version.exe"
+        $version = $env:GITHUB_REF_NAME.Substring(1)  # 移除标签中的'v'前缀
+        $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
         Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
-        echo "Renamed to $newName"
+        echo "重命名为 $newName"
         dir dist\
         
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: windows-exe
-        path: dist/ok_school_life-windows-x64-*.exe
+        name: windows-exe-${{ matrix.arch }}
+        path: dist/ok_school_life-windows-${{ matrix.arch }}-*.exe
 
   create-release:
     name: Create Release
@@ -59,20 +68,32 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Download artifact
+    - name: Download x64 artifact
       uses: actions/download-artifact@v4
       with:
-        name: windows-exe
+        name: windows-exe-x64
         path: release-files
-        
-    - name: Verify EXE file
+
+    - name: Download x86 artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-exe-x86
+        path: release-files
+
+    - name: Verify EXE files
       run: |
         echo "=== 文件列表 ==="
         ls -R release-files
         if ls release-files/ok_school_life-windows-x64-*.exe 1> /dev/null 2>&1; then
-          echo "✅ EXE 文件存在"
+          echo "✅ x64 EXE 文件存在"
         else
-          echo "❌ 错误：EXE 文件未找到！"
+          echo "❌ 错误：x64 EXE 文件未找到！"
+          exit 1
+        fi
+        if ls release-files/ok_school_life-windows-x86-*.exe 1> /dev/null 2>&1; then
+          echo "✅ x86 EXE 文件存在"
+        else
+          echo "❌ 错误：x86 EXE 文件未找到！"
           exit 1
         fi
         
@@ -81,6 +102,6 @@ jobs:
       with:
         tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
-        body: "Automated EXE release"
-        artifacts: "release-files/ok_school_life-windows-x64-*.exe"
+        body: "Automated EXE release (包含32位和64位版本)"
+        artifacts: "release-files/ok_school_life-windows-*.exe"
         token: ${{ secrets.GITHUB_TOKEN }}
