@@ -1,6 +1,4 @@
 # 🎮 OK School Life - 校园生活模拟游戏
-
-![Gameplay Screenshot](https://via.placeholder.com/400x200?text=OK+School+Life)  
 *一个充满惊喜(惊吓)的校园模拟游戏*
 
 ## 📖 游戏简介
