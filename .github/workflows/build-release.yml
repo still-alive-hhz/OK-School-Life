@@ -20,7 +20,7 @@ jobs:
     - name: Clean previous builds
       run: |
         rm -rf build/ dist/ __pycache__/
-      shell: bash  # 关键修复：强制使用 Bash 解释器
+      shell: bash
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -34,16 +34,24 @@ jobs:
         
     - name: Build EXE with PyInstaller
       run: |
-        pyinstaller --onefile --console ok_school_life.py  # 保留控制台
+        pyinstaller --onefile --console ok_school_life.py
         echo "=== 生成文件验证 ==="
         dir dist\
         echo "===================="
 
+    - name: Rename EXE file
+      run: |
+        $version = $env:GITHUB_REF_NAME.Substring(1)  # Remove 'v' prefix from tag
+        $newName = "ok_school_life-windows-x64-$version.exe"
+        Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
+        echo "Renamed to $newName"
+        dir dist\
+        
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: windows-exe
-        path: dist/ok_school_life.exe  # 精确指定文件名
+        path: dist/ok_school_life-windows-x64-*.exe
 
   create-release:
     name: Create Release
@@ -61,7 +69,7 @@ jobs:
       run: |
         echo "=== 文件列表 ==="
         ls -R release-files
-        if [ -f "release-files/ok_school_life.exe" ]; then
+        if ls release-files/ok_school_life-windows-x64-*.exe 1> /dev/null 2>&1; then
           echo "✅ EXE 文件存在"
         else
           echo "❌ 错误：EXE 文件未找到！"
@@ -74,5 +82,5 @@ jobs:
         tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
         body: "Automated EXE release"
-        artifacts: "release-files/ok_school_life.exe"  # 精确匹配文件
+        artifacts: "release-files/ok_school_life-windows-x64-*.exe"
         token: ${{ secrets.GITHUB_TOKEN }}
