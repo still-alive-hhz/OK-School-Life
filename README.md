@@ -37,7 +37,7 @@ python ok-school-life.py
 - 神秘黑色高级车同学
 - 传奇浴室里的烟哥
 - 突如其来的仪容检查
-- 原神玩家VS LOL玩家的战争
+- 原神玩家 VS LOL玩家的战争
 
 ## 📌 注意事项
 
@@ -47,20 +47,18 @@ python ok-school-life.py
 
 ## 📅 版本信息
 
-`Beta v0.2.3` | 最后更新：2025.04.06
+目前处于Beta版本
+
+## TO-DO
+- 图形化界面
+- 
 
 ## 👨‍💻 开发者
 
 Still_Alive with GitHub Copilot
 
-WaiJade for GitHub Actions
+WaiJade with his clever brain
+
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-```
-这个版本：
-✅ 采用标准Markdown语法  
-✅ 包含GitHub友好的格式（徽章、代码块等）  
-✅ 比初始版本更结构化、可视化  
-✅ 保留了所有关键信息  
-```
