@@ -45,6 +45,7 @@ jobs:
         run: |
           $version = $env:GITHUB_REF_NAME.Substring(1)
           @"
+          # UTF-8
           VSVersionInfo(
             ffi=FixedFileInfo(
               filevers=($version.Split('.') + @(0, 0))[0..3],
@@ -65,10 +66,12 @@ jobs:
                   StringStruct('FileVersion', '$version'),
                   StringStruct('LegalCopyright', 'Copyright © 2024 Still_Alive and WaiJade'),
                   StringStruct('ProductName', 'ok_school_life'),
-                  StringStruct('ProductVersion', '$version')])
+                  StringStruct('ProductVersion', '$version')]
+                )
               ]),
-              VarFileInfo([VarStruct('Translation', [1033, 1200])])
+              VarFileInfo([VarStruct('Translation', [1033, 1200])]
             )
+          )
           "@ | Out-File -Encoding utf8 version_info.py
 
       - name: Build executable
@@ -94,12 +97,16 @@ jobs:
   build-linux:
     name: Build Linux (${{ matrix.arch }})
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         arch: [x64, arm64]
     steps:
       - uses: actions/checkout@v4
       
+      - name: Install binutils (required for objdump)
+        run: sudo apt-get update && sudo apt-get install -y binutils
+
       - name: Set up QEMU (ARM64 only)
         if: matrix.arch == 'arm64'
         uses: docker/setup-qemu-action@v3
@@ -132,6 +139,7 @@ jobs:
   build-macos:
     name: Build macOS (${{ matrix.arch }})
     runs-on: macos-latest
+    timeout-minutes: 10
     strategy:
       matrix:
         arch: [x64, arm64]
@@ -149,6 +157,8 @@ jobs:
           
           if [ "${{ matrix.arch }}" == "arm64" ]; then
             export ARCHFLAGS="-arch arm64"
+          else
+            export ARCHFLAGS="-arch x86_64"
           fi
           
           pyinstaller --onefile --console ok_school_life.py
@@ -182,7 +192,7 @@ jobs:
           find release-files -type f -exec file {} \;
           
           echo "=== Windows metadata ==="
-          find release-files -name "*.exe" -exec exiftool {} \; | grep -E "Author|Company|Copyright"
+          find release-files -name "*.exe" -exec exiftool {} \; | grep -E "Author|Company|Copyright" || true
 
       - uses: softprops/action-gh-release@v1
         with:
