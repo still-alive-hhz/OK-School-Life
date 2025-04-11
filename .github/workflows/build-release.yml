@@ -9,7 +9,6 @@ permissions:
   contents: write
 
 jobs:
-  # Windows 构建 (x86/x64)
   build-windows:
     name: Build Windows (${{ matrix.arch }})
     runs-on: windows-latest
@@ -51,7 +50,6 @@ jobs:
           name: ${{ matrix.artifact_suffix }}
           path: dist/ok_school_life-${{ matrix.artifact_suffix }}-*
 
-  # Linux 构建 (x86_64 + ARM64)
   build-linux:
     name: Build Linux (${{ matrix.arch }})
     runs-on: ubuntu-latest
@@ -106,7 +104,6 @@ jobs:
           name: linux-${{ matrix.arch }}
           path: dist/ok_school_life-linux-${{ matrix.arch }}-*
 
-  # macOS 构建 (x64 + ARM64)
   build-macos:
     name: Build macOS (${{ matrix.arch }})
     runs-on: macos-latest
@@ -145,7 +142,6 @@ jobs:
           name: macos-${{ matrix.arch }}
           path: dist/ok_school_life-macos-${{ matrix.arch }}-*
 
-  # 创建发布
   create-release:
     name: Create Release
     needs: [build-windows, build-linux, build-macos]
@@ -165,24 +161,32 @@ jobs:
           echo "=== 可执行文件验证 ==="
           ls -R release-files
           
-          declare -a platforms=(
-            "windows-x64.exe"
-            "windows-x86.exe"
-            "linux-x64"
-            "linux-arm64"
-            "macos-x64"
-            "macos-arm64"
+          # 新版验证逻辑（精确匹配带版本号的文件）
+          declare -a required_files=(
+            "ok_school_life-windows-x64-*.exe"
+            "ok_school_life-windows-x86-*.exe"
+            "ok_school_life-linux-x64-*"
+            "ok_school_life-linux-arm64-*"
+            "ok_school_life-macos-x64-*"
+            "ok_school_life-macos-arm64-*"
           )
           
-          for platform in "${platforms[@]}"; do
-            if ! ls release-files/ok_school_life-${platform}-* >/dev/null 2>&1; then
-              echo "❌ ${platform} 可执行文件缺失!"
-              exit 1
+          missing_files=0
+          for pattern in "${required_files[@]}"; do
+            matches=(release-files/$pattern)
+            if [ ${#matches[@]} -eq 0 ] || [ ! -e "${matches[0]}" ]; then
+              echo "❌ 文件匹配失败: $pattern"
+              missing_files=1
             else
-              echo "✅ ${platform} 文件存在"
-              file release-files/ok_school_life-${platform}-*
+              echo "✅ 文件存在: ${matches[0]}"
+              file "${matches[0]}"
             fi
           done
+          
+          if [ $missing_files -ne 0 ]; then
+            exit 1
+          fi
+          echo "✅ 所有文件验证通过"
 
       - name: Generate changelog
         id: changelog
