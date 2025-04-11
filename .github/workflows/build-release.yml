@@ -89,26 +89,6 @@ jobs:
           fi
           echo "✅ 所有文件验证通过"
 
-      - name: Extract contributors
-        id: contributors
-        run: |
-          current_tag="${{ github.ref_name }}"
-          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "")
-          
-          if [ -z "$previous_tag" ]; then
-            contributors=$(git log --pretty="%an")
-          else
-            contributors=$(git log --pretty="%an" "$previous_tag".."$current_tag")
-          fi
-
-          unique_contributors=$(echo "$contributors" | sort | uniq)
-          contributors_list=$(echo "$unique_contributors" | awk '{ printf "- @%s\n", $0 }' | sed 's/ /\\ /g')
-
-          delimiter=$(openssl rand -hex 16)
-          echo "contributors<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "$contributors_list" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
-
       - name: Generate changelog
         id: changelog
         run: |
@@ -141,7 +121,6 @@ jobs:
       - name: Publish release
         uses: softprops/action-gh-release@v1
         with:
-          generate_release_notes: true
           tag_name: ${{ github.ref_name }}
           name: "🎉 Release ${{ github.ref_name }}"
           body: |
@@ -155,9 +134,6 @@ jobs:
             - 📦 包含架构: x86 & x64
             - 🏷️ 版本标签: ${{ github.ref_name }}
             - 🔗 触发提交: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
-            
-            ### 👥 贡献者致谢
-            ${{ steps.contributors.outputs.contributors || '暂无贡献者信息' }}
           files: |
             release-files/ok_school_life-windows-x64-*.exe
             release-files/ok_school_life-windows-x86-*.exe
