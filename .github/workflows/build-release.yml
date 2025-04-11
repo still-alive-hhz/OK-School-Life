@@ -146,9 +146,6 @@ jobs:
           body: |
             ## 🚀 版本更新说明
             
-            ### 👥 贡献者致谢
-            ${{ steps.contributors.outputs.contributors || '暂无贡献者信息' }}
-
             ### 📦 更新内容
             ${{ steps.changelog.outputs.changelog }}
             
@@ -157,16 +154,9 @@ jobs:
             - 📦 包含架构: x86 & x64
             - 🏷️ 版本标签: ${{ github.ref_name }}
             - 🔗 触发提交: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
-
-            ### 📥 下载统计
-            文件下载统计（每小时自动更新）：
-            ```bash
-            # 使用 GitHub API 获取下载量
-            curl -s https://api.github.com/repos/${{ github.repository }}/releases/tags/${{ github.ref_name }} | jq '.assets[] | "\(.name): \(.download_count)"'
-            ```
-
-            ### 📦 依赖关系
-            查看依赖项目: [![Dependents](https://img.shields.io/badge/依赖项目-点击查看-blue)](https://github.com/${{ github.repository }}/network/dependents)
+            
+            ### 👥 贡献者致谢
+            ${{ steps.contributors.outputs.contributors || '暂无贡献者信息' }}
           files: |
             release-files/ok_school_life-windows-x64-*.exe
             release-files/ok_school_life-windows-x86-*.exe
