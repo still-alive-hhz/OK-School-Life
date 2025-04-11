@@ -29,8 +29,10 @@ jobs:
       
     - name: Clean previous builds
       run: |
-        rm -rf build/ dist/ __pycache__/
-      shell: bash
+        Remove-Item -Recurse -Force build, dist, __pycache__ -ErrorAction SilentlyContinue
+        if (Test-Path dist) { Remove-Item -Recurse -Force dist }
+        if (Test-Path build) { Remove-Item -Recurse -Force build }
+        if (Test-Path __pycache__) { Remove-Item -Recurse -Force __pycache__ }
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -47,7 +49,7 @@ jobs:
       run: |
         pyinstaller --onefile --console ok_school_life.py
         echo "=== 生成文件验证 ==="
-        dir dist\
+        dir dist
         echo "===================="
 
     - name: Rename EXE file
@@ -56,7 +58,7 @@ jobs:
         $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
         Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
         echo "重命名为 $newName"
-        dir dist\
+        dir dist
         
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -79,17 +81,21 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: release-files
+        merge-multiple: true  # 关键修改：合并所有文件到同一目录
 
     - name: Verify EXE files
       run: |
         echo "=== 文件列表 ==="
         ls -R release-files
+        
+        # 修正后的路径检查
         if ls release-files/ok_school_life-windows-x64-*.exe 1> /dev/null 2>&1; then
           echo "✅ x64 EXE 文件存在"
         else
           echo "❌ 错误：x64 EXE 文件未找到！"
           exit 1
         fi
+        
         if ls release-files/ok_school_life-windows-x86-*.exe 1> /dev/null 2>&1; then
           echo "✅ x86 EXE 文件存在"
         else
