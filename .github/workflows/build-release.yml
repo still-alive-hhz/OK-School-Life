@@ -114,24 +114,27 @@ jobs:
           echo "Comparing range: $range"
         fi
         
-        # Get commit messages
+        # Get commit messages with author names
         if [ -z "$range" ]; then
-          messages=$(git log --pretty=format:"- %s (%h)" --reverse)
+          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse)
         else
-          messages=$(git log --pretty=format:"- %s (%h)" --reverse $range)
+          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse $range)
         fi
         
-        # Escape newlines for JSON
-        messages="${messages//$'\n'/'%0A'}"
-        
-        echo "messages=${messages}" >> $GITHUB_OUTPUT
+        # Use heredoc to properly handle multiline output
+        delimiter=$(date +%s | sha256sum | base64 | head -c 10)
+        echo "messages<<${delimiter}" >> $GITHUB_OUTPUT
+        echo "$messages" >> $GITHUB_OUTPUT
+        echo "${delimiter}" >> $GITHUB_OUTPUT
         
     - name: Create GitHub Release
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
-        body: ${{ steps.get-commits.outputs.messages }}
+        body: |
+          ### 更新内容
+          ${{ steps.get-commits.outputs.messages }}
           
           ### 构建信息
           - 版本: ${{ github.ref_name }}
