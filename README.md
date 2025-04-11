@@ -64,6 +64,10 @@ python ok-school-life.py
 * [ ]  对exe进行标准化设置图标等
 * [ ]
 
+## 🎆 我们的愿景
+
+游戏正式发布的时候在其他平台发布1元付费版，收益全部用于公益事业。
+
 ## 👨‍💻 开发者
 
 Still_Alive with GitHub Copilot
