@@ -46,14 +46,17 @@ jobs:
     - name: Build EXE with PyInstaller
       run: |
         pyinstaller --onefile --console ok_school_life.py
-        dir dist
+        echo "=== 生成文件验证 ==="
+        dir dist\
+        echo "===================="
 
     - name: Rename EXE file
       run: |
         $version = $env:GITHUB_REF_NAME.Substring(1)
         $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
         Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
-        dir dist
+        echo "重命名为 $newName"
+        dir dist\
         
     - name: Upload artifact
       uses: actions/upload-artifact@v4
@@ -72,17 +75,27 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Download x64 artifact
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
-        name: windows-exe-x64
         path: release-files
 
-    - name: Download x86 artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: windows-exe-x86
-        path: release-files
+    - name: Verify EXE files
+      run: |
+        echo "=== 文件列表 ==="
+        ls -R release-files
+        if ls release-files/ok_school_life-windows-x64-*.exe 1> /dev/null 2>&1; then
+          echo "✅ x64 EXE 文件存在"
+        else
+          echo "❌ 错误：x64 EXE 文件未找到！"
+          exit 1
+        fi
+        if ls release-files/ok_school_life-windows-x86-*.exe 1> /dev/null 2>&1; then
+          echo "✅ x86 EXE 文件存在"
+        else
+          echo "❌ 错误：x86 EXE 文件未找到！"
+          exit 1
+        fi
 
     - name: Get commit messages
       id: get-commits
@@ -94,10 +107,10 @@ jobs:
         previous_tag=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^ 2>/dev/null || echo "")
         
         if [ -z "$previous_tag" ]; then
-          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse)
+          messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse)
           echo "这是第一个发布版本"
         else
-          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse $previous_tag..${{ github.ref_name }})
+          messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse $previous_tag..${{ github.ref_name }})
           echo "变更范围: $previous_tag..${{ github.ref_name }}"
         fi
         
@@ -108,6 +121,8 @@ jobs:
 
     - name: Create Release
       uses: softprops/action-gh-release@v1
+      env:
+        BUILD_TIME: $(date -u '+%Y-%m-%d %H:%M:%S')
       with:
         tag_name: ${{ github.ref_name }}
         name: Release ${{ github.ref_name }}
@@ -119,7 +134,8 @@ jobs:
           
           #### 构建信息
           - 版本号: ${{ github.ref_name }}
-          - 构建时间: $(date -u '+%Y-%m-%d %H:%M:%S')
+          - 构建时间: ${{ env.BUILD_TIME }}
+          - 包含架构: x86 和 x64
         files: |
           release-files/ok_school_life-windows-x64-*.exe
           release-files/ok_school_life-windows-x86-*.exe
