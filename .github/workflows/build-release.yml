@@ -1,139 +1,145 @@
-name: Build and Release EXE
+name: Build and Release Pipeline
 
 on:
   push:
     tags:
-      - 'v*'
+      - 'v*.*.*'  # 强制语义化版本标签
 
 permissions:
   contents: write
+  security-events: write
 
 jobs:
-  build-exe:
-    name: Build EXE (${{ matrix.arch }})
+  build:
+    name: Build (${{ matrix.arch }})
     runs-on: windows-latest
     strategy:
       matrix:
         arch: [x64, x86]
-        include:
-          - arch: x64
-            python_arch: x64
-          - arch: x86
-            python_arch: x86
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Clean workspace
-        run: |
-          Remove-Item -Recurse -Force build, dist, __pycache__ -ErrorAction SilentlyContinue
 
-      - name: Setup Python ${{ matrix.python_arch }}
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          architecture: ${{ matrix.python_arch }}
-        
+          architecture: ${{ matrix.arch }}
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
-        
+          pip install pyinstaller safety
+
+      - name: Security scan
+        run: |
+          safety check --full-report --output=security_report.md
+          echo "SECURITY_REPORT<<EOF" >> $GITHUB_ENV
+          cat security_report.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Build executable
         run: |
           pyinstaller --onefile --console ok_school_life.py
-          dir dist
+          mv dist/ok_school_life.exe dist/ok_school_life-${{ matrix.arch }}.exe
 
-      - name: Rename artifacts
-        run: |
-          $version = $env:GITHUB_REF_NAME.Substring(1)
-          $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
-          Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
-          dir dist
-        
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: windows-exe-${{ matrix.arch }}
-          path: dist/ok_school_life-windows-${{ matrix.arch }}-*.exe
+          name: binaries-${{ matrix.arch }}
+          path: dist/ok_school_life-${{ matrix.arch }}.exe
 
-  create-release:
+  release:
     name: Create Release
-    needs: build-exe
+    needs: build
     runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create-release.outputs.id }}
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Download build artifacts
+      - name: Download binaries
         uses: actions/download-artifact@v4
         with:
-          path: release-files
-          merge-multiple: true
+          path: release-assets
 
-      - name: Verify files
-        run: |
-          echo "=== 文件验证 ==="
-          ls -R release-files
-          if ! ls release-files/ok_school_life-windows-x64-*.exe >/dev/null 2>&1; then
-            echo "❌ x64 可执行文件缺失!"
-            exit 1
-          fi
-          if ! ls release-files/ok_school_life-windows-x86-*.exe >/dev/null 2>&1; then
-            echo "❌ x86 可执行文件缺失!"
-            exit 1
-          fi
-          echo "✅ 所有文件验证通过"
-
-      - name: Generate changelog
+      - name: Generate release notes
         id: changelog
+        uses: mikepenz/release-changelog-builder-action@v3
+        with:
+          configuration: |
+            categories:
+              - title: "🚀 新增功能"
+                labels: ["feature", "enhancement"]
+              - title: "🐛 问题修复"
+                labels: ["bug", "security"]
+              - title: "♻️ 功能变更"
+                labels: ["refactor", "change"]
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get contributors
+        id: contributors
         run: |
-          git config --global user.email "action@github.com"
-          git config --global user.name "Release Bot"
-          git fetch --tags --force
-          
-          current_tag="${{ github.ref_name }}"
-          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "")
+          contributors=$(git log --pretty="%an" ${{ github.ref_name }}^..HEAD | sort -u | awk '{print "@"$0}' ORS=', ')
+          echo "contributors=${contributors%, }" >> $GITHUB_OUTPUT
 
-          if [ -z "$previous_tag" ]; then
-            echo "范围: 初始提交到 $current_tag"
-            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 描述: %b%n  ↳ 提交人: %an (%h)")
-          else
-            echo "范围: $previous_tag..$current_tag"
-            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 描述: %b%n  ↳ 提交人: %an (%h)" "$previous_tag".."$current_tag")
-          fi
-
-          delimiter=$(openssl rand -hex 16)
-          echo "changelog<<${delimiter}" >> $GITHUB_OUTPUT
-          echo "$messages" >> $GITHUB_OUTPUT
-          echo "${delimiter}" >> $GITHUB_OUTPUT
-
-      - name: Generate timestamp
-        id: timestamp
-        run: |
-          build_time=$(TZ="Asia/Shanghai" date +"%Y-%m-%d %H:%M:%S")
-          echo "time=🕒 构建时间: $build_time (北京时间 UTC+8)" >> $GITHUB_OUTPUT
-
-      - name: Publish release
+      - name: Create release
+        id: create-release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-          name: "🎉 Release ${{ github.ref_name }}"
+          name: "🎯 v${{ github.ref_name }} 版本发布"
           body: |
-            ## 🚀 版本更新说明
-            
-            ### 📦 更新内容
+            ## 📅 发布日期: $(date -u +"%Y-%m-%d") (北京时间)
+
+            ### 🔖 版本信息
+            - **版本号**: ${{ github.ref_name }}
+            - **构建分支**: ${{ github.ref }}
+            - **提交哈希**: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+            ### 📜 更新说明
             ${{ steps.changelog.outputs.changelog }}
-            
-            ### 🔧 构建信息
-            - ${{ steps.timestamp.outputs.time }}
-            - 📦 包含架构: x86 & x64
-            - 🏷️ 版本标签: ${{ github.ref_name }}
-            - 🔗 触发提交: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+
+            ### ⚠️ 已知问题
+            - [ ] 待解决问题1
+            - [ ] 待解决问题2
+
+            ### 🔧 升级指南
+            1. 备份现有配置
+            2. 下载对应架构的可执行文件
+            3. 替换旧版本文件
+
+            ### 👥 贡献者
+            ${{ steps.contributors.outputs.contributors }}
+
+            ### 🔒 安全报告
+            ```markdown
+            ${{ env.SECURITY_REPORT }}
+            ```
           files: |
-            release-files/ok_school_life-windows-x64-*.exe
-            release-files/ok_school_life-windows-x86-*.exe
+            release-assets/ok_school_life-x64.exe
+            release-assets/ok_school_life-x86.exe
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') }}
+
+  post-release:
+    name: Post Release
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get download stats
+        run: |
+          echo "Download stats will be available at:"
+          echo "https://api.github.com/repos/${{ github.repository }}/releases/${{ needs.release.outputs.release_id }}/assets"
+
+      - name: Update dependency graph
+        uses: actions/dependency-review-action@v3
+
+      - name: Notify team
+        run: |
+          echo "Release published: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
