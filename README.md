@@ -54,7 +54,7 @@ python ok-school-life.py
 
 目前处于Beta版本
 
-## TO-DO
+## ✅TO-DO
 
 * [ ]  图形化界面
 * [ ]  安卓适配和打包apk
@@ -68,7 +68,7 @@ python ok-school-life.py
 
 ## 👨‍💻 开发者
 
-Still_Alive with GitHub Copilot
+Still_Alive with GitHub Copilot and OpenAI ChatGPT
 
 WaiJade with his clever brain
 
