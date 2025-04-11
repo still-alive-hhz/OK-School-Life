@@ -12,7 +12,6 @@ jobs:
   build-windows:
     name: Build Windows (${{ matrix.arch }})
     runs-on: windows-latest
-    timeout-minutes: 15
     strategy:
       matrix:
         arch: [x64, x86]
@@ -36,55 +35,12 @@ jobs:
           python-version: '3.10'
           architecture: ${{ matrix.python_arch }}
         
-      - name: Install dependencies
-        run: |
+      - run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller==6.12.0 pywin32
-
-      - name: Create version info
-        run: |
-          $version = $env:GITHUB_REF_NAME.Substring(1)
-          @"
-          # UTF-8
-          VSVersionInfo(
-            ffi=FixedFileInfo(
-              filevers=($version.Split('.') + @(0, 0))[0..3],
-              prodvers=($version.Split('.') + @(0, 0))[0..3],
-              mask=0x3f,
-              flags=0x0,
-              OS=0x40004,
-              fileType=0x1,
-              subtype=0x0,
-              date=(0, 0)
-            ),
-            kids=[
-              StringFileInfo([
-                StringTable(
-                  '040904b0',
-                  [StringStruct('CompanyName', 'Still_Alive and WaiJade'),
-                  StringStruct('FileDescription', 'ok_school_life'),
-                  StringStruct('FileVersion', '$version'),
-                  StringStruct('LegalCopyright', 'Copyright © 2024 Still_Alive and WaiJade'),
-                  StringStruct('ProductName', 'ok_school_life'),
-                  StringStruct('ProductVersion', '$version')]
-                )
-              ]),
-              VarFileInfo([VarStruct('Translation', [1033, 1200])]
-            )
-          )
-          "@ | Out-File -Encoding utf8 version_info.py
-
-      - name: Build executable
-        run: |
-          $version = $env:GITHUB_REF_NAME.Substring(1)
-          pyinstaller --onefile --console --version-file version_info.py --log-level WARN ok_school_life.py
+          pip install pyinstaller
+          pyinstaller --onefile --console ok_school_life.py
           
-          if (-not (Test-Path "dist\ok_school_life.exe")) {
-            Write-Output "::error::Build failed - executable not found!"
-            Get-Content -Path "build\ok_school_life\warn-ok_school_life.txt" -ErrorAction SilentlyContinue
-            exit 1
-          }
-          
+          $version = $env:GITHUB_REF_NAME.Substring(1)
           $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
           Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
           dir dist
@@ -97,19 +53,24 @@ jobs:
   build-linux:
     name: Build Linux (${{ matrix.arch }})
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     strategy:
       matrix:
         arch: [x64, arm64]
     steps:
       - uses: actions/checkout@v4
       
-      - name: Install binutils (required for objdump)
-        run: sudo apt-get update && sudo apt-get install -y binutils
-
       - name: Set up QEMU (ARM64 only)
         if: matrix.arch == 'arm64'
         uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      
+      - name: Set up build environment
+        run: |
+          sudo apt-get update
+          if [ "${{ matrix.arch }}" == "arm64" ]; then
+            sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+          fi
       
       - uses: actions/setup-python@v4
         with:
@@ -121,8 +82,15 @@ jobs:
           pip install pyinstaller
           
           if [ "${{ matrix.arch }}" == "arm64" ]; then
-            docker run --rm --platform linux/arm64 -v $(pwd):/src -w /src python:3.10-slim \
-              sh -c "pip install pyinstaller && pyinstaller --onefile --console ok_school_life.py"
+            # 两种构建方式尝试（优先QEMU，失败后交叉编译）
+            if ! docker run --rm --platform linux/arm64 -v $(pwd):/src -w /src python:3.10-slim \
+              sh -c "pip install pyinstaller && pyinstaller --onefile --console ok_school_life.py"; then
+              
+              echo "QEMU构建失败，尝试交叉编译..."
+              export CC=aarch64-linux-gnu-gcc
+              export CXX=aarch64-linux-gnu-g++
+              pyinstaller --onefile --console ok_school_life.py
+            fi
           else
             pyinstaller --onefile --console ok_school_life.py
           fi
@@ -139,13 +107,15 @@ jobs:
   build-macos:
     name: Build macOS (${{ matrix.arch }})
     runs-on: macos-latest
-    timeout-minutes: 10
     strategy:
       matrix:
         arch: [x64, arm64]
     steps:
       - uses: actions/checkout@v4
       
+      - name: Clean workspace
+        run: rm -rf build dist __pycache__
+
       - uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -186,32 +156,84 @@ jobs:
           path: release-files
           merge-multiple: true
 
-      - name: Verify binaries
+      - name: Verify all binaries
         run: |
-          echo "=== Built files ==="
-          find release-files -type f -exec file {} \;
+          echo "=== 可执行文件验证 ==="
+          ls -R release-files
           
-          echo "=== Windows metadata ==="
-          find release-files -name "*.exe" -exec exiftool {} \; | grep -E "Author|Company|Copyright" || true
+          # 新版验证逻辑（精确匹配带版本号的文件）
+          declare -a required_files=(
+            "ok_school_life-windows-x64-*.exe"
+            "ok_school_life-windows-x86-*.exe"
+            "ok_school_life-linux-x64-*"
+            "ok_school_life-linux-arm64-*"
+            "ok_school_life-macos-x64-*"
+            "ok_school_life-macos-arm64-*"
+          )
+          
+          missing_files=0
+          for pattern in "${required_files[@]}"; do
+            matches=(release-files/$pattern)
+            if [ ${#matches[@]} -eq 0 ] || [ ! -e "${matches[0]}" ]; then
+              echo "❌ 文件匹配失败: $pattern"
+              missing_files=1
+            else
+              echo "✅ 文件存在: ${matches[0]}"
+              file "${matches[0]}"
+            fi
+          done
+          
+          if [ $missing_files -ne 0 ]; then
+            exit 1
+          fi
+          echo "✅ 所有文件验证通过"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          git fetch --tags --force
+          current_tag="${{ github.ref_name }}"
+          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "")
+          
+          if [ -z "$previous_tag" ]; then
+            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)")
+          else
+            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)" "$previous_tag".."$current_tag")
+          fi
+          
+          delimiter=$(openssl rand -hex 16)
+          echo "changelog<<${delimiter}" >> $GITHUB_OUTPUT
+          echo "$messages" >> $GITHUB_OUTPUT
+          echo "${delimiter}" >> $GITHUB_OUTPUT
+
+      - name: Generate build info
+        id: build-info
+        run: |
+          echo "time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+          echo "platforms=🪟 Windows (x86/x64) | 🐧 Linux (x64/ARM64) |  macOS (x64/ARM64)" >> $GITHUB_OUTPUT
 
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-          name: "Release ${{ github.ref_name }}"
+          name: "🎉 Release ${{ github.ref_name }}"
           body: |
-            ## Multi-Platform Build
+            ## 📦 多平台构建结果
             
-            ### Supported Architectures
-            - Windows (x86/x64)
-            - Linux (x64/ARM64)
-            - macOS (x64/ARM64)
+            ### 支持架构
+            ${{ steps.build-info.outputs.platforms }}
             
-            ### Build Info
-            - Version: ${{ github.ref_name }}
-            - Build Date: $(date -u +'%Y-%m-%d %H:%M:%S UTC')
+            ### 📝 更新日志
+            ${{ steps.changelog.outputs.changelog }}
             
-            ### Authors
-            - Still_Alive
-            - WaiJade
+            ### 🛠️ 构建信息
+            - 🕒 构建时间: ${{ steps.build-info.outputs.time }} (UTC+8)
+            - 🏷️ 版本标签: ${{ github.ref_name }}
+            - 🔗 提交页面: [${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})
+            
+            ### 🔍 文件验证
+            ```bash
+            # 检查文件类型
+            file ok_school_life-*
+            ```
           files: |
             release-files/ok_school_life-*
