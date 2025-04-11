@@ -5,12 +5,19 @@ OK School Life
 A school life management application.
 
 Authors: Still_Alive & WaiJade
+<<<<<<< Updated upstream
 Version: {VERSION}
+=======
+Version: {version}
+>>>>>>> Stashed changes
 Copyright © 2025 Still_Alive & WaiJade
 """
 import random
 # 让版本号作为变量方便调用，而不用手动修改
 VERSION = "v0.2.7"
+
+# 让版本号作为变量方便调用，而不用手动修改
+version = "v0.2.8"
 
 event_list = ['**你在一个富裕家庭**', '**你在一个普通家庭**', '**你在一个贫穷家庭**']
 event_1_list = ['>>>第一周开家长会，校长讲话时间超出预计时间一小时，导致放学时间延迟，你会？',
@@ -66,8 +73,13 @@ achievements = []
 last_event = None
 rd_30_consequence = None
 
+# 游戏开始函数
 def start():
+<<<<<<< Updated upstream
     print("欢迎来到OK School Life beta {0}！".format(VERSION))
+=======
+    print(f"欢迎来到OK School Life beta {version}！")
+>>>>>>> Stashed changes
     print("你将经历不同的事件和选择，看看你的学校生活会如何发展。")
     tostart = input("按“1”以开始游戏，按“2”以退出：")
     if tostart == "1":
@@ -84,7 +96,8 @@ def start():
         test()
     '''
 
-def main():    
+# 主函数
+def main():   
     start_event = random.choices(event_list, weights=[0.2, 0.5, 0.3])[0]
     print(f"{start_event}。\n你中考考得很好，现在可以选择学校。")
     print("1.羊县中学")
@@ -213,7 +226,13 @@ def event_3():
                 print("无效的选择，请重新输入。")
     random_event()
 
+# 添加成就的函数
+def add_achievement(achievement):
+    if achievement not in achievements:
+        achievements.append(achievement)
+    random_event()    
 
+# 随机事件函数
 def random_event():
     # 使用全局变量记录上一次的随机事件
     global last_event
@@ -420,8 +439,9 @@ def random_event():
                 random_event_choice == random_event_list[26] and choice == "2" or \
                 random_event_choice == random_event_list[28] and choice == "3":
                 print("游戏结束。")
+                print("你获得的成就：")
                 for achievement in achievements:
-                    print(f"你获得的成就：{achievement}")
+                    print(f"{achievement}")
             # 特定事件结果
             elif random_event_choice == random_event_list[30] and choice == "1": 
                 rd_30_consequence = random.choices(rd_30_consequences, weights = [0.6, 0.4])[0]
@@ -432,20 +452,15 @@ def random_event():
                     print("游戏结束。")
             # 加入成就
             elif random_event_choice == random_event_list[8] and choice == "3":
-                achievements.append("视力5.0")
-                random_event()
+                add_achievement("视力5.0")
             elif random_event_choice == random_event_list[13] and choice == "1":
-                achievements.append("原神启动")
-                random_event()
+                add_achievement("原神启动")
             elif random_event_choice == random_event_list[14] and choice == "3":
-                achievements.append("一心学习")
-                random_event()
+                add_achievement("一心学习")
             elif random_event_choice == random_event_list[25] and choice == "1":
-                achievements.append("西格玛人")
-                random_event()
+                add_achievement("西格玛人")
             elif random_event_choice == random_event_list[31] and choice == "2":
-                achievements.append("正义插队者")
-                random_event()
+                add_achievement("正义插队者")
             
             else:
                 random_event()
@@ -465,7 +480,7 @@ def random_event():
 
 start()
 
-# Version beta 0.2.7
+# Version beta 0.2.8
 # Designed by Still_Alive with Github Copilot and OpenAI ChatGPT
 # Contributed by WaiJade with DeepSeek and KiMi
 # 2025.04.12 02:31 China Standard Time
