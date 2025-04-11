@@ -19,7 +19,6 @@
 
 如果你有python环境，使用git来下载此仓库
 
-
 ```bash
 # 需要Python 3.x
 git clone https://github.com/still-alive-hhz/OK-School-Life.git

@@ -24,6 +24,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Needed to get full commit history
       
     - name: Clean previous builds
       run: |
@@ -96,12 +98,44 @@ jobs:
           echo "❌ 错误：x86 EXE 文件未找到！"
           exit 1
         fi
+    
+    - name: Get commit messages since last tag
+      id: get-commits
+      run: |
+        # Get previous tag
+        previous_tag=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^ 2>/dev/null || echo "")
+        
+        if [ -z "$previous_tag" ]; then
+          # If no previous tag, get all commits
+          range=""
+          echo "No previous tag found, including all commits"
+        else
+          range="$previous_tag..${{ github.ref_name }}"
+          echo "Comparing range: $range"
+        fi
+        
+        # Get commit messages
+        if [ -z "$range" ]; then
+          messages=$(git log --pretty=format:"- %s (%h)" --reverse)
+        else
+          messages=$(git log --pretty=format:"- %s (%h)" --reverse $range)
+        fi
+        
+        # Escape newlines for JSON
+        messages="${messages//$'\n'/'%0A'}"
+        
+        echo "messages=${messages}" >> $GITHUB_OUTPUT
         
     - name: Create GitHub Release
       uses: ncipollo/release-action@v1
       with:
         tag: ${{ github.ref_name }}
         name: "Release ${{ github.ref_name }}"
-        body: "Automated EXE release (包含32位和64位版本)"
+        body: ${{ steps.get-commits.outputs.messages }}
+          
+          ### 构建信息
+          - 版本: ${{ github.ref_name }}
+          - 触发提交: ${{ github.sha }}
+          - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
         artifacts: "release-files/ok_school_life-windows-*.exe"
         token: ${{ secrets.GITHUB_TOKEN }}
