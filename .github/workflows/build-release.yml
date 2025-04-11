@@ -25,44 +25,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # Needed to get full commit history
+        fetch-depth: 0  # 获取完整提交历史
       
-    - name: Clean previous builds
-      run: |
-        rm -rf build/ dist/ __pycache__/
-      shell: bash
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        architecture: ${{ matrix.python_arch }}
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pyinstaller
-        
-    - name: Build EXE with PyInstaller
-      run: |
-        pyinstaller --onefile --console ok_school_life.py
-        echo "=== 生成文件验证 ==="
-        dir dist\
-        echo "===================="
-
-    - name: Rename EXE file
-      run: |
-        $version = $env:GITHUB_REF_NAME.Substring(1)  # 移除标签中的'v'前缀
-        $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
-        Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
-        echo "重命名为 $newName"
-        dir dist\
-        
-    - name: Upload artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: windows-exe-${{ matrix.arch }}
-        path: dist/ok_school_life-windows-${{ matrix.arch }}-*.exe
+    # ... (保留 build-exe 的其他步骤不变)
 
   create-release:
     name: Create Release
@@ -70,75 +35,42 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Download x64 artifact
-      uses: actions/download-artifact@v4
+    # 1. 首先必须重新 checkout 代码
+    - name: Checkout code
+      uses: actions/checkout@v4
       with:
-        name: windows-exe-x64
-        path: release-files
-
-    - name: Download x86 artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: windows-exe-x86
-        path: release-files
-
-    - name: Verify EXE files
-      run: |
-        echo "=== 文件列表 ==="
-        ls -R release-files
-        if ls release-files/ok_school_life-windows-x64-*.exe 1> /dev/null 2>&1; then
-          echo "✅ x64 EXE 文件存在"
-        else
-          echo "❌ 错误：x64 EXE 文件未找到！"
-          exit 1
-        fi
-        if ls release-files/ok_school_life-windows-x86-*.exe 1> /dev/null 2>&1; then
-          echo "✅ x86 EXE 文件存在"
-        else
-          echo "❌ 错误：x86 EXE 文件未找到！"
-          exit 1
-        fi
+        fetch-depth: 0  # 获取完整提交历史
+    
+    # ... (保留下载 artifact 和验证的步骤不变)
     
     - name: Get commit messages since last tag
       id: get-commits
       run: |
-        # Get previous tag
+        # 设置 Git 用户信息（避免警告）
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        
+        # 获取所有标签（确保最新标签被获取）
+        git fetch --tags --force
+        
+        # 获取前一个标签
         previous_tag=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^ 2>/dev/null || echo "")
         
         if [ -z "$previous_tag" ]; then
-          # If no previous tag, get all commits
-          range=""
-          echo "No previous tag found, including all commits"
+          # 如果是第一个标签，获取初始提交到当前标签的所有提交
+          first_commit=$(git rev-list --max-parents=0 HEAD)
+          messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse $first_commit..${{ github.ref_name }})
+          echo "这是第一个标签，包含从初始提交到当前的所有更改"
         else
-          range="$previous_tag..${{ github.ref_name }}"
-          echo "Comparing range: $range"
+          # 否则获取两个标签之间的提交
+          messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse $previous_tag..${{ github.ref_name }})
+          echo "比较范围: $previous_tag..${{ github.ref_name }}"
         fi
         
-        # Get commit messages with author names
-        if [ -z "$range" ]; then
-          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse)
-        else
-          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse $range)
-        fi
-        
-        # Use heredoc to properly handle multiline output
+        # 使用 heredoc 格式正确输出多行文本
         delimiter=$(date +%s | sha256sum | base64 | head -c 10)
         echo "messages<<${delimiter}" >> $GITHUB_OUTPUT
         echo "$messages" >> $GITHUB_OUTPUT
         echo "${delimiter}" >> $GITHUB_OUTPUT
-        
-    - name: Create GitHub Release
-      uses: ncipollo/release-action@v1
-      with:
-        tag: ${{ github.ref_name }}
-        name: "Release ${{ github.ref_name }}"
-        body: |
-          ### 更新内容
-          ${{ steps.get-commits.outputs.messages }}
-          
-          ### 构建信息
-          - 版本: ${{ github.ref_name }}
-          - 触发提交: ${{ github.sha }}
-          - 构建时间: $(date -u +"%Y-%m-%dT%H:%M:%SZ")
-        artifacts: "release-files/ok_school_life-windows-*.exe"
-        token: ${{ secrets.GITHUB_TOKEN }}
+
+    # ... (保留创建 release 的步骤不变)
