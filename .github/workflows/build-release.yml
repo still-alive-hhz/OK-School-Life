@@ -65,9 +65,22 @@ jobs:
         with:
           platforms: arm64
       
-      - name: Set up build environment
+      - name: Install system dependencies
         run: |
           sudo apt-get update
+          sudo apt-get install -y \
+            fakeroot \
+            dpkg-dev \
+            debhelper \
+            dh-python \
+            python3-all \
+            python3-stdeb \
+            patchelf \
+            desktop-file-utils \
+            libgdk-pixbuf2.0-dev \
+            fakeroot \
+            strace
+            
           if [ "${{ matrix.arch }}" == "arm64" ]; then
             sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
           fi
@@ -76,33 +89,87 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: Build executable
+      - name: Build executable and packages
         run: |
+          # 安装Python依赖
           python -m pip install --upgrade pip
-          pip install pyinstaller
+          pip install pyinstaller appimage-builder
           
+          # 构建基础可执行文件
           if [ "${{ matrix.arch }}" == "arm64" ]; then
-            # 两种构建方式尝试（优先QEMU，失败后交叉编译）
-            if ! docker run --rm --platform linux/arm64 -v $(pwd):/src -w /src python:3.10-slim \
-              sh -c "pip install pyinstaller && pyinstaller --onefile --console ok_school_life.py"; then
-              
-              echo "QEMU构建失败，尝试交叉编译..."
-              export CC=aarch64-linux-gnu-gcc
-              export CXX=aarch64-linux-gnu-g++
-              pyinstaller --onefile --console ok_school_life.py
-            fi
-          else
-            pyinstaller --onefile --console ok_school_life.py
+            export CC=aarch64-linux-gnu-gcc
+            export CXX=aarch64-linux-gnu-g++
           fi
           
+          pyinstaller --onefile --console ok_school_life.py
+          
           version=${GITHUB_REF#refs/tags/v}
-          mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
-          file dist/ok_school_life-linux-${{ matrix.arch }}-*
+          binary_name="ok_school_life-linux-${{ matrix.arch }}-$version"
+          
+          # 重命名二进制文件
+          mv dist/ok_school_life "dist/$binary_name"
+          
+          # 创建AppImage
+          echo "创建AppImage..."
+          mkdir -p AppDir/usr/bin
+          cp "dist/$binary_name" AppDir/usr/bin/
+          chmod +x AppDir/usr/bin/"$binary_name"
+          
+          cat > AppDir/AppRun << 'EOF'
+          #!/bin/sh
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          exec "$HERE/usr/bin/$(basename "$SELF")" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+          
+          cat > AppDir/ok_school_life.desktop << EOF
+          [Desktop Entry]
+          Name=OK School Life
+          Exec=$binary_name
+          Icon=ok_school_life
+          Type=Application
+          Categories=Utility;
+          EOF
+          
+          appimage-builder --recipe AppImageBuilder.yml --appdir AppDir
+          mv *.AppImage "dist/$binary_name.AppImage"
+          
+          # 创建DEB包
+          echo "创建DEB包..."
+          mkdir -p debian/usr/bin
+          cp "dist/$binary_name" debian/usr/bin/
+          
+          cat > debian/control << EOF
+          Source: ok-school-life
+          Section: utils
+          Priority: optional
+          Maintainer: Your Name <your.email@example.com>
+          Build-Depends: debhelper (>=9), python3-all, python3-setuptools
+          Standards-Version: 3.9.6
+          Homepage: https://github.com/your/repo
+          
+          Package: ok-school-life
+          Architecture: ${{ matrix.arch == 'arm64' && 'arm64' || 'amd64' }}
+          Depends: \${shlibs:Depends}, \${misc:Depends}
+          Description: OK School Life application
+           A useful application for school life management.
+          EOF
+          
+          dpkg-buildpackage -us -uc -b
+          mv ../ok-school-life_*.deb "dist/$binary_name.deb"
+          
+          # 验证生成的文件
+          file dist/*
+          ls -lh dist/
 
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.arch }}
-          path: dist/ok_school_life-linux-${{ matrix.arch }}-*
+          path: |
+            dist/ok_school_life-linux-${{ matrix.arch }}-*
+            dist/*.AppImage
+            dist/*.deb
 
   build-macos:
     name: Build macOS (${{ matrix.arch }})
@@ -120,27 +187,90 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: Build executable
+      - name: Install dependencies
         run: |
+          brew install create-dmg
           python -m pip install --upgrade pip
-          pip install pyinstaller
-          
+          pip install pyinstaller py2app
+      
+      - name: Build executable and packages
+        run: |
+          # 设置架构
           if [ "${{ matrix.arch }}" == "arm64" ]; then
             export ARCHFLAGS="-arch arm64"
           else
             export ARCHFLAGS="-arch x86_64"
           fi
           
-          pyinstaller --onefile --console ok_school_life.py
-          
           version=${GITHUB_REF#refs/tags/v}
-          mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
-          file dist/ok_school_life-macos-${{ matrix.arch }}-*
+          app_name="OK School Life"
+          bundle_name="OK_School_Life"
+          binary_name="ok_school_life-macos-${{ matrix.arch }}-$version"
+          
+          # 构建基础可执行文件
+          pyinstaller --onefile --console ok_school_life.py
+          mv dist/ok_school_life "dist/$binary_name"
+          
+          # 创建.app bundle
+          mkdir -p "$app_name.app/Contents/MacOS"
+          mkdir -p "$app_name.app/Contents/Resources"
+          
+          cp "dist/$binary_name" "$app_name.app/Contents/MacOS/$bundle_name"
+          chmod +x "$app_name.app/Contents/MacOS/$bundle_name"
+          
+          cat > "$app_name.app/Contents/Info.plist" << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>$bundle_name</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.example.ok-school-life</string>
+              <key>CFBundleName</key>
+              <string>$app_name</string>
+              <key>CFBundleVersion</key>
+              <string>$version</string>
+              <key>CFBundleShortVersionString</key>
+              <string>$version</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+          </dict>
+          </plist>
+          EOF
+          
+          # 创建PKG
+          pkgbuild \
+            --root "$app_name.app" \
+            --identifier "com.example.ok-school-life" \
+            --version "$version" \
+            --install-location "/Applications" \
+            "dist/$binary_name.pkg"
+          
+          # 创建DMG
+          create-dmg \
+            --volname "$app_name" \
+            --volicon "icon.icns" \
+            --window-pos 200 120 \
+            --window-size 800 400 \
+            --icon-size 100 \
+            --icon "$app_name.app" 200 190 \
+            --hide-extension "$app_name.app" \
+            --app-drop-link 600 185 \
+            "dist/$binary_name.dmg" \
+            "$app_name.app/"
+          
+          # 验证生成的文件
+          file dist/*
+          ls -lh dist/
 
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
-          path: dist/ok_school_life-macos-${{ matrix.arch }}-*
+          path: |
+            dist/ok_school_life-macos-${{ matrix.arch }}-*
+            dist/*.pkg
+            dist/*.dmg
 
   create-release:
     name: Create Release
@@ -156,30 +286,41 @@ jobs:
           path: release-files
           merge-multiple: true
 
-      - name: Verify all binaries
+      - name: Verify all packages
         run: |
-          echo "=== 可执行文件验证 ==="
+          echo "=== 文件验证 ==="
           ls -R release-files
           
-          # 新版验证逻辑（精确匹配带版本号的文件）
+          # 验证所有平台的文件
           declare -a required_files=(
-            "ok_school_life-windows-x64-*.exe"
-            "ok_school_life-windows-x86-*.exe"
-            "ok_school_life-linux-x64-*"
-            "ok_school_life-linux-arm64-*"
-            "ok_school_life-macos-x64-*"
-            "ok_school_life-macos-arm64-*"
+            # Windows
+            "release-files/windows-x64/ok_school_life-windows-x64-*.exe"
+            "release-files/windows-x86/ok_school_life-windows-x86-*.exe"
+            
+            # Linux
+            "release-files/linux-x64/ok_school_life-linux-x64-*"
+            "release-files/linux-x64/*.AppImage"
+            "release-files/linux-x64/*.deb"
+            "release-files/linux-arm64/ok_school_life-linux-arm64-*"
+            "release-files/linux-arm64/*.AppImage"
+            "release-files/linux-arm64/*.deb"
+            
+            # macOS
+            "release-files/macos-x64/ok_school_life-macos-x64-*"
+            "release-files/macos-x64/*.pkg"
+            "release-files/macos-x64/*.dmg"
+            "release-files/macos-arm64/ok_school_life-macos-arm64-*"
+            "release-files/macos-arm64/*.pkg"
+            "release-files/macos-arm64/*.dmg"
           )
           
           missing_files=0
           for pattern in "${required_files[@]}"; do
-            matches=(release-files/$pattern)
-            if [ ${#matches[@]} -eq 0 ] || [ ! -e "${matches[0]}" ]; then
+            if ! ls $pattern >/dev/null 2>&1; then
               echo "❌ 文件匹配失败: $pattern"
               missing_files=1
             else
-              echo "✅ 文件存在: ${matches[0]}"
-              file "${matches[0]}"
+              echo "✅ 文件存在: $(ls $pattern)"
             fi
           done
           
@@ -210,7 +351,7 @@ jobs:
         id: build-info
         run: |
           echo "time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "platforms=🪟 Windows (x86/x64) | 🐧 Linux (x64/ARM64) |  macOS (x64/ARM64)" >> $GITHUB_OUTPUT
+          echo "platforms=🪟 Windows (x86/x64) | 🐧 Linux (AppImage/DEB) |  macOS (PKG/DMG)" >> $GITHUB_OUTPUT
 
       - uses: softprops/action-gh-release@v1
         with:
@@ -219,7 +360,7 @@ jobs:
           body: |
             ## 📦 多平台构建结果
             
-            ### 支持架构
+            ### 支持架构和包格式
             ${{ steps.build-info.outputs.platforms }}
             
             ### 📝 更新日志
@@ -233,7 +374,7 @@ jobs:
             ### 🔍 文件验证
             ```bash
             # 检查文件类型
-            file ok_school_life-*
+            find release-files -type f -exec file {} \;
             ```
           files: |
-            release-files/ok_school_life-*
+            release-files/**/*
