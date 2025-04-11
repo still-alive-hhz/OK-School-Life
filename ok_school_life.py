@@ -1,23 +1,16 @@
-"""
+'''
 OK School Life
 ==============
 
 A school life management application.
 
 Authors: Still_Alive & WaiJade
-<<<<<<< Updated upstream
-Version: {VERSION}
-=======
 Version: {version}
->>>>>>> Stashed changes
 Copyright © 2025 Still_Alive & WaiJade
-"""
+'''
 import random
 # 让版本号作为变量方便调用，而不用手动修改
-VERSION = "v0.2.7"
-
-# 让版本号作为变量方便调用，而不用手动修改
-version = "v0.2.8"
+version = "v0.2.9"
 
 event_list = ['**你在一个富裕家庭**', '**你在一个普通家庭**', '**你在一个贫穷家庭**']
 event_1_list = ['>>>第一周开家长会，校长讲话时间超出预计时间一小时，导致放学时间延迟，你会？',
@@ -75,11 +68,7 @@ rd_30_consequence = None
 
 # 游戏开始函数
 def start():
-<<<<<<< Updated upstream
-    print("欢迎来到OK School Life beta {0}！".format(VERSION))
-=======
     print(f"欢迎来到OK School Life beta {version}！")
->>>>>>> Stashed changes
     print("你将经历不同的事件和选择，看看你的学校生活会如何发展。")
     tostart = input("按“1”以开始游戏，按“2”以退出：")
     if tostart == "1":
@@ -92,7 +81,8 @@ def start():
         print("无效的输入，请重新输入。")
         start()
         # 测试函数的调用（放到函数外面了，不然无法运行）
-    '''elif tostart == "3":
+    '''
+        elif tostart == "3":
         test()
     '''
 
@@ -480,7 +470,7 @@ def random_event():
 
 start()
 
-# Version beta 0.2.8
+# Version beta 0.2.9
 # Designed by Still_Alive with Github Copilot and OpenAI ChatGPT
 # Contributed by WaiJade with DeepSeek and KiMi
 # 2025.04.12 02:31 China Standard Time
