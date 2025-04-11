@@ -25,9 +25,41 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # 获取完整提交历史
+        fetch-depth: 0
       
-    # ... (保留 build-exe 的其他步骤不变)
+    - name: Clean previous builds
+      run: |
+        rm -rf build/ dist/ __pycache__/
+      shell: bash
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        architecture: ${{ matrix.python_arch }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        
+    - name: Build EXE with PyInstaller
+      run: |
+        pyinstaller --onefile --console ok_school_life.py
+        dir dist
+
+    - name: Rename EXE file
+      run: |
+        $version = $env:GITHUB_REF_NAME.Substring(1)
+        $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
+        Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
+        dir dist
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-exe-${{ matrix.arch }}
+        path: dist/ok_school_life-windows-${{ matrix.arch }}-*.exe
 
   create-release:
     name: Create Release
@@ -35,42 +67,59 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. 首先必须重新 checkout 代码
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0  # 获取完整提交历史
-    
-    # ... (保留下载 artifact 和验证的步骤不变)
-    
-    - name: Get commit messages since last tag
+        fetch-depth: 0
+
+    - name: Download x64 artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-exe-x64
+        path: release-files
+
+    - name: Download x86 artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-exe-x86
+        path: release-files
+
+    - name: Get commit messages
       id: get-commits
       run: |
-        # 设置 Git 用户信息（避免警告）
         git config --global user.email "action@github.com"
         git config --global user.name "GitHub Action"
-        
-        # 获取所有标签（确保最新标签被获取）
         git fetch --tags --force
         
-        # 获取前一个标签
         previous_tag=$(git describe --tags --abbrev=0 ${{ github.ref_name }}^ 2>/dev/null || echo "")
         
         if [ -z "$previous_tag" ]; then
-          # 如果是第一个标签，获取初始提交到当前标签的所有提交
-          first_commit=$(git rev-list --max-parents=0 HEAD)
-          messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse $first_commit..${{ github.ref_name }})
-          echo "这是第一个标签，包含从初始提交到当前的所有更改"
+          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse)
+          echo "这是第一个发布版本"
         else
-          # 否则获取两个标签之间的提交
-          messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse $previous_tag..${{ github.ref_name }})
-          echo "比较范围: $previous_tag..${{ github.ref_name }}"
+          messages=$(git log --pretty=format:"- %s (by %an, %h)" --reverse $previous_tag..${{ github.ref_name }})
+          echo "变更范围: $previous_tag..${{ github.ref_name }}"
         fi
         
-        # 使用 heredoc 格式正确输出多行文本
         delimiter=$(date +%s | sha256sum | base64 | head -c 10)
         echo "messages<<${delimiter}" >> $GITHUB_OUTPUT
         echo "$messages" >> $GITHUB_OUTPUT
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
-    # ... (保留创建 release 的步骤不变)
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ github.ref_name }}
+        name: Release ${{ github.ref_name }}
+        body: |
+          ### 🚀 新版本发布
+          
+          #### 更新内容
+          ${{ steps.get-commits.outputs.messages }}
+          
+          #### 构建信息
+          - 版本号: ${{ github.ref_name }}
+          - 构建时间: $(date -u '+%Y-%m-%d %H:%M:%S')
+        files: |
+          release-files/ok_school_life-windows-x64-*.exe
+          release-files/ok_school_life-windows-x86-*.exe
