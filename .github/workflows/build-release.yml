@@ -30,9 +30,6 @@ jobs:
     - name: Clean previous builds
       run: |
         Remove-Item -Recurse -Force build, dist, __pycache__ -ErrorAction SilentlyContinue
-        if (Test-Path dist) { Remove-Item -Recurse -Force dist }
-        if (Test-Path build) { Remove-Item -Recurse -Force build }
-        if (Test-Path __pycache__) { Remove-Item -Recurse -Force __pycache__ }
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -48,16 +45,13 @@ jobs:
     - name: Build EXE with PyInstaller
       run: |
         pyinstaller --onefile --console ok_school_life.py
-        echo "=== 生成文件验证 ==="
         dir dist
-        echo "===================="
 
     - name: Rename EXE file
       run: |
         $version = $env:GITHUB_REF_NAME.Substring(1)
         $newName = "ok_school_life-windows-${{ matrix.arch }}-$version.exe"
         Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
-        echo "重命名为 $newName"
         dir dist
         
     - name: Upload artifact
@@ -81,22 +75,19 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         path: release-files
-        merge-multiple: true  # 关键修改：合并所有文件到同一目录
+        merge-multiple: true
 
     - name: Verify EXE files
       run: |
         echo "=== 文件列表 ==="
         ls -R release-files
-        
-        # 修正后的路径检查
-        if ls release-files/ok_school_life-windows-x64-*.exe 1> /dev/null 2>&1; then
+        if ls release-files/ok_school_life-windows-x64-*.exe; then
           echo "✅ x64 EXE 文件存在"
         else
           echo "❌ 错误：x64 EXE 文件未找到！"
           exit 1
         fi
-        
-        if ls release-files/ok_school_life-windows-x86-*.exe 1> /dev/null 2>&1; then
+        if ls release-files/ok_school_life-windows-x86-*.exe; then
           echo "✅ x86 EXE 文件存在"
         else
           echo "❌ 错误：x86 EXE 文件未找到！"
@@ -114,10 +105,8 @@ jobs:
         
         if [ -z "$previous_tag" ]; then
           messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse)
-          echo "这是第一个发布版本"
         else
           messages=$(git log --pretty=format:"- %s (提交人: %an, 提交ID: %h)" --reverse $previous_tag..${{ github.ref_name }})
-          echo "变更范围: $previous_tag..${{ github.ref_name }}"
         fi
         
         delimiter=$(date +%s | sha256sum | base64 | head -c 10)
@@ -125,10 +114,13 @@ jobs:
         echo "$messages" >> $GITHUB_OUTPUT
         echo "${delimiter}" >> $GITHUB_OUTPUT
 
+    - name: Get build time
+      id: get-time
+      run: |
+        echo "time=$(date -u '+%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
+
     - name: Create Release
       uses: softprops/action-gh-release@v1
-      env:
-        BUILD_TIME: $(date -u '+%Y-%m-%d %H:%M:%S')
       with:
         tag_name: ${{ github.ref_name }}
         name: Release ${{ github.ref_name }}
@@ -140,7 +132,7 @@ jobs:
           
           #### 构建信息
           - 版本号: ${{ github.ref_name }}
-          - 构建时间: ${{ env.BUILD_TIME }}
+          - 构建时间: ${{ steps.get-time.outputs.time }}
           - 包含架构: x86 和 x64
         files: |
           release-files/ok_school_life-windows-x64-*.exe
