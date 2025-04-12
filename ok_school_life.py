@@ -10,7 +10,7 @@ Copyright © 2025 Still_Alive & WaiJade
 '''
 import random
 # 让版本号作为变量方便调用，而不用手动修改
-version = "v0.2.10"
+version = "v0.2.11"
 
 achievements = []  # 存储玩家获得的成就
 used_event_indices = []  # 存储已触发的事件索引
@@ -394,9 +394,9 @@ def start_game():
 def main():   
     start_event = random.choices(event_list, weights=[0.2, 0.5, 0.3])[0]
     print(f"{start_event}。\n你中考考得很好，现在可以选择学校。")
-    print("1.羊县中学")
-    print("2.闪西省汗中中学")
-    print("3.汗中市龙港高级中学")
+    print("1. 羊县中学")
+    print("2. 闪西省汗中中学")
+    print("3. 汗中市龙港高级中学")
     
     while True:  # 使用循环代替递归
         choice = input("请选择你要去的学校（输入数字）：")
@@ -520,14 +520,36 @@ def event_3():
                 print("无效的选择，请重新输入。")
     random_event()
 
-
+def check_random_results(event, choice):
+    if event["question"] == ">>>在宿舍流鼻血，你会？" and choice == "1":
+        # 定义随机结果
+        rd_30_results = [
+            "流了几分钟就不流了，没事。",
+            "你因失血过多进医院了！"
+        ]
+        # 根据权重随机选择结果
+        result = random.choices(rd_30_results, weights=[0.6, 0.4])[0]
+        # 如果结果是严重后果，结束游戏
+        if result == "你因失血过多进医院了！":
+            print(result)
+            print("游戏结束。")
+            show_achievements()
+            exit()
+        else:
+            print(result)  # 输出随机结果
+            return # 返回控制权给调用者
 # 随机事件函数
 used_event_indices = []
 
 # 随机事件处理
 def random_event():
     global last_event
-
+    # 检查是否所有事件都已触发
+    if len(used_event_indices) == len(random_events):
+        print("所有随机事件已体验完，游戏结束！")
+        show_achievements()
+        exit()
+    
     # 随机选择一个未触发的事件
     while True:
         idx = random.randint(0, len(random_events) - 1)
@@ -547,32 +569,15 @@ def random_event():
     while True:
         choice = input("请选择（输入数字）：")
         if choice in event["choices"]:
-            # 检查是否是流鼻血事件的第一个选项
-            if event["question"] == ">>>在宿舍流鼻血，你会？" and choice == "1":
-                # 定义随机结果
-                rd_30_results = [
-                    "流了几分钟就不流了，没事。",
-                    "你因失血过多进医院了！"
-                ]
-                # 根据权重随机选择结果
-                result = random.choices(rd_30_results, weights=[0.6, 0.4])[0]
-                print(f"你选择了只是用纸堵住，相信会好。\n{result}")
-                # 如果结果是严重后果，结束游戏
-                if result == "你因失血过多进医院了！":
-                    print("游戏结束。")
-                    show_achievements()
-                    exit()
-                else:
-                    random_event()
-            else:
-                # 正常处理其他选项
-                print(event["results"][choice])
-                handle_achievements(event, choice)
-                if "end_game_choices" in event and choice in event["end_game_choices"]:
-                    print("游戏结束。")
-                    show_achievements()
-                    exit()
-                random_event()
+            print(event["results"][choice])
+            # 检查是否有随机结果
+            check_random_results(event, choice)
+            handle_achievements(event, choice)
+            if "end_game_choices" in event and choice in event["end_game_choices"]:
+                print("游戏结束。")
+                show_achievements()
+                exit()
+            random_event()
             break
         else:
             print("无效的选择，请重新输入。")
@@ -609,8 +614,8 @@ def show_achievements():
 if __name__ == "__main__":
     start_game()
 
-# Version beta 0.2.10
+# Version beta 0.2.11
 # Designed by Still_Alive with Github Copilot and OpenAI ChatGPT
 # Contributed by WaiJade with DeepSeek and KiMi
-# 2025.04.12 16:11 China Standard Time
+# 2025.04.12 18:01 China Standard Time
 # Thank you for playing!
