@@ -210,7 +210,7 @@ jobs:
         id: build-info
         run: |
           echo "time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "platforms=🪟 Windows (x86/x64) | 🐧 Linux (x64/ARM64) |  macOS (x64/ARM64)" >> $GITHUB_OUTPUT
+          echo "platforms=🐧 Linux (x64/ARM64) |  macOS (ARM64/x64) | 🪟 Windows (x86/x64)" >> $GITHUB_OUTPUT
 
       - uses: softprops/action-gh-release@v1
         with:
