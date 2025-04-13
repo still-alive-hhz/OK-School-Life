@@ -9,11 +9,22 @@ Version: {version}
 Copyright © 2025 Still_Alive & WaiJade
 '''
 import random
-# 让版本号作为变量方便调用，而不用手动修改
-version = "v0.2.11"
+import tkinter as tk
+from tkinter import messagebox
 
+# 让版本号作为变量方便调用，而不用手动修改
+version = "v0.3.0"
+
+# 初始化主窗口
+root = tk.Tk()
+root.title("OK School Life")
+root.geometry("600x400")
+
+# 全局变量
 achievements = []  # 存储玩家获得的成就
 used_event_indices = []  # 存储已触发的事件索引
+current_event = None  # 当前事件
+current_choices = {}  # 当前事件的选项
 
 event_list = ['**你在一个富裕家庭**', '**你在一个普通家庭**', '**你在一个贫穷家庭**']
 event_1_list = ['>>>第一周开家长会，校长讲话时间超出预计时间一小时，导致放学时间延迟，你会？',
@@ -362,28 +373,23 @@ random_events = [
     }
 ]
 
-# 针对random_events[30]，choice 1的特定后果
-rd_30_results = ['流了几分钟就不流了，没事。',
-                      '你因失血过多进医院了！',]
+# 显示欢迎界面
+def show_welcome():
+    for widget in root.winfo_children():
+        widget.destroy()
+    tk.Label(root, text=f"欢迎来到 OK School Life beta {version}", font=("Helvetica", 20)).pack(pady=20)
+    tk.Button(root, text="开始游戏", command=start_game, font=("Helvetica", 14)).pack(pady=10)
+    tk.Button(root, text="查看成就", command=show_achievements, font=("Helvetica", 14)).pack(pady=10)
+    tk.Button(root, text="退出游戏", command=root.quit, font=("Helvetica", 14)).pack(pady=10)
 
-# 游戏版本
-
-
-
-# 游戏开始函数
 def start_game():
-    print(f"欢迎来到OK School Life beta {version}！")
-    print("你将经历不同的事件和选择，看看你的学校生活会如何发展。")
-    tostart = input("按“1”以开始游戏，按“2”以退出：")
-    if tostart == "1":
-        print("游戏开始！")
-        main()
-    elif tostart == "2":
-        print("感谢游玩，期待下次再见！")
-        exit()
-    else:
-        print("无效的输入，请重新输入。")
-        start_game()
+    for widget in root.winfo_children():
+        widget.destroy()
+    tk.Label(root, text="你将经历不同的事件和选择，看看你的学校生活会如何发展。", font=("Helvetica", 16), wraplength=500).pack(pady=20)
+    tk.Button(root, text="开始事件", command=main, font=("Helvetica", 14)).pack(pady=10)
+    tk.Button(root, text="返回主菜单", command=show_welcome, font=("Helvetica", 14)).pack(pady=10)
+
+
         # 测试函数的调用（放到函数外面了，不然无法运行）
     '''
         elif tostart == "3":
@@ -391,134 +397,160 @@ def start_game():
     '''
 
 # 主函数
-def main():   
+def main():
+    for widget in root.winfo_children():
+        widget.destroy()
+
+    # 显示初始事件
     start_event = random.choices(event_list, weights=[0.2, 0.5, 0.3])[0]
-    print(f"{start_event}。\n你中考考得很好，现在可以选择学校。")
-    print("1. 羊县中学")
-    print("2. 闪西省汗中中学")
-    print("3. 汗中市龙港高级中学")
-    
-    while True:  # 使用循环代替递归
-        choice = input("请选择你要去的学校（输入数字）：")
-        if choice == "1":
-            print("你选择了羊县中学。")
-            event_1()
-            break
-        elif choice == "2":
-            print("你选择了闪西省汗中中学。")
-            event_2()
-            break
-        elif choice == "3":
-            print("你选择了汗中市龙港高级中学。")
-            if start_event == event_list[2]:
-                print("你家境贫寒，直接破产了！\n游戏结束。")
-                exit()
-            event_3()    
-            break
+    tk.Label(root, text=f"{start_event}。\n你中考考得很好，现在可以选择学校。", font=("Helvetica", 16), wraplength=500).pack(pady=20)
+
+    # 显示学校选择按钮
+    tk.Button(root, text="羊县中学", command=lambda: handle_school_choice("1", start_event), font=("Helvetica", 14)).pack(pady=5)
+    tk.Button(root, text="闪西省汗中中学", command=lambda: handle_school_choice("2", start_event), font=("Helvetica", 14)).pack(pady=5)
+    tk.Button(root, text="汗中市龙港高级中学", command=lambda: handle_school_choice("3", start_event), font=("Helvetica", 14)).pack(pady=5)
+
+# 处理学校选择
+def handle_school_choice(choice, start_event):
+    if choice == "1":
+        tk.Label(root, text="你选择了羊县中学。", font=("Helvetica", 14)).pack(pady=10)
+        event_1()
+    elif choice == "2":
+        tk.Label(root, text="你选择了闪西省汗中中学。", font=("Helvetica", 14)).pack(pady=10)
+        event_2()
+    elif choice == "3":
+        if start_event == event_list[2]:
+            messagebox.showinfo("游戏结束", "你家境贫寒，直接破产了！\n游戏结束。")
+            show_welcome()
         else:
-            print("无效的选择，请重新输入。")
+            tk.Label(root, text="你选择了汗中市龙港高级中学。", font=("Helvetica", 14)).pack(pady=10)
+            event_3()
 
 def event_1():
-    for event_1_choice in event_1_list:
-        print(f"{event_1_choice}")
-        if event_1_choice == event_1_list[0]:
-            print("1. 继续听演讲\n2. 请假回家\n3. 向老师投诉")
-            choices = {"1": "你选择了继续听演讲。\n演讲结束后，你感到很疲惫。",
+    for widget in root.winfo_children():
+        widget.destroy()
+
+    # 显示事件问题
+    event_1_choice = random.choice(event_1_list)
+    tk.Label(root, text=event_1_choice, font=("Helvetica", 16), wraplength=500).pack(pady=20)
+
+    # 根据事件显示选项
+    if event_1_choice == event_1_list[0]:
+        choices = {"1": "继续听演讲", "2": "请假回家", "3": "向老师投诉"}
+        results = {"1": "你选择了继续听演讲。\n演讲结束后，你感到很疲惫。",
                    "2": "你选择了请假回家。\n你被家长骂了。",
                    "3": "你选择了向老师投诉。\n你失败了。老师难道能管校长的事？"}
-        elif event_1_choice == event_1_list[1]:
-            print("1. 符合无钱补课者的利益\n2. 不合理的制度\n3. 有的学校两周一放，知足常乐")
-            choices = {"1": "你选择了符合无钱补课者的利益。\n你感到很开心。",
+    elif event_1_choice == event_1_list[1]:
+        choices = {"1": "符合无钱补课者的利益", "2": "不合理的制度", "3": "有的学校两周一放，知足常乐"}
+        results = {"1": "你选择了符合无钱补课者的利益。\n你感到很开心。",
                    "2": "你选择了不合理的制度。\n你开始对此抱有异见。",
                    "3": "你选择了有的学校两周一放，知足常乐。\n你感到压抑且自由。"}
-        elif event_1_choice == event_1_list[2]:
-            print("1. 乘坐电梯\n2. 走楼梯\n3. 不管")
-            choices = {"1": "你选择了乘坐电梯。\n你违反了学生条例，游戏失败。",
+    elif event_1_choice == event_1_list[2]:
+        choices = {"1": "乘坐电梯", "2": "走楼梯", "3": "不管"}
+        results = {"1": "你选择了乘坐电梯。\n你违反了学生条例，游戏失败。",
                    "2": "你选择了走楼梯。\n你感到很累。",
                    "3": "你选择了不管。\n好像什么也没有发生。"}
-        else:
-            return
+    else:
+        return
 
-        while True:
-            choice = input("请选择（输入数字）：")
-            if choice in choices:
-                print(choices[choice])           
-                if event_1_choice == event_1_list[0] and choice == "3" or \
-                   event_1_choice == event_1_list[2] and choice == "1":
-                   print("游戏结束。")
-                   exit()
-                break
-            else:
-                print("无效的选择，请重新输入。")
-    random_event()
+    # 显示选项按钮
+    for key, value in choices.items():
+        tk.Button(root, text=value, command=lambda k=key: handle_event_1_choice(k, event_1_choice, results), font=("Helvetica", 14)).pack(pady=5)
+
+# 处理事件 1 的选择
+def handle_event_1_choice(choice, event_1_choice, results):
+    result = results[choice]
+    messagebox.showinfo("结果", result)
+
+    # 检查游戏结束条件
+    if (event_1_choice == event_1_list[0] and choice == "3") or (event_1_choice == event_1_list[2] and choice == "1"):
+        messagebox.showinfo("游戏结束", "游戏结束。")
+        show_welcome()
+    else:
+        random_event()
 
 def event_2():
-    for event_2_choice in event_2_list:
-        print(f"{event_2_choice}")
-        if event_2_choice == event_2_list[0]:
-            print("1. 烈日下硬撑着\n2. 向老师说明\n3. 大声呵斥军训不人性化")
-            choices = {"1": "你选择了烈日下硬撑着。\n你中暑进医院了！",
-                       "2": "你选择了向老师说明。\n老师夸你勇敢，让你休息了。",
-                       "3": "你选择了大声呵斥军训不人性化。\n你被教官骂了一顿，心情很不好。"}
-        elif event_2_choice == event_2_list[1]:
-            print("1. 加入社团\n2. 不加入社团\n3. 向老师举报")
-            choices = {"1": "你选择了加入社团。\n你感到很开心。",
-                       "2": "你选择了不加入社团。\n你感到很无聊。",
-                       "3": "你选择了向老师举报。\n老师告诉你这是正常操作。"}
-        elif event_2_choice == event_2_list[2]:
-            print("1. 忍耐\n2. 向老师投诉\n3. 把舍友打一顿")
-            choices = {"1": "你选择了忍耐。\n你整晚没睡好，你很烦躁。",
-                       "2": "你选择了向老师投诉。\n老师告诉你这是正常现象，你很无奈。",
-                       "3": "你选择了把舍友打一顿。\n你因违反校规被开除！"}
-        else:
-            return
+    for widget in root.winfo_children():
+        widget.destroy()
 
-        while True:
-            choice = input("请选择（输入数字）：")
-            if choice in choices:
-                print(choices[choice])           
-                if event_2_choice == event_2_list[0] and choice == "1" or \
-                   event_2_choice == event_2_list[2] and choice == "3":
-                   print("游戏结束。")
-                   exit()
-                break
-            else:
-                print("无效的选择，请重新输入。")
-    random_event()
+    # 显示事件问题
+    event_2_choice = random.choice(event_2_list)
+    tk.Label(root, text=event_2_choice, font=("Helvetica", 16), wraplength=500).pack(pady=20)
+
+    # 根据事件显示选项
+    if event_2_choice == event_2_list[0]:
+        choices = {"1": "烈日下硬撑着", "2": "向老师说明", "3": "大声呵斥军训不人性化"}
+        results = {"1": "你选择了烈日下硬撑着。\n你中暑进医院了！",
+                   "2": "你选择了向老师说明。\n老师夸你勇敢，让你休息了。",
+                   "3": "你选择了大声呵斥军训不人性化。\n你被教官骂了一顿，心情很不好。"}
+    elif event_2_choice == event_2_list[1]:
+        choices = {"1": "加入社团", "2": "不加入社团", "3": "向老师举报"}
+        results = {"1": "你选择了加入社团。\n你感到很开心。",
+                   "2": "你选择了不加入社团。\n你感到很无聊。",
+                   "3": "你选择了向老师举报。\n老师告诉你这是正常操作。"}
+    elif event_2_choice == event_2_list[2]:
+        choices = {"1": "忍耐", "2": "向老师投诉", "3": "把舍友打一顿"}
+        results = {"1": "你选择了忍耐。\n你整晚没睡好，你很烦躁。",
+                   "2": "你选择了向老师投诉。\n老师告诉你这是正常现象，你很无奈。",
+                   "3": "你选择了把舍友打一顿。\n你因违反校规被开除！"}
+    else:
+        return
+
+    # 显示选项按钮
+    for key, value in choices.items():
+        tk.Button(root, text=value, command=lambda k=key: handle_event_2_choice(k, event_2_choice, results), font=("Helvetica", 14)).pack(pady=5)
+
+# 处理事件 2 的选择
+def handle_event_2_choice(choice, event_2_choice, results):
+    result = results[choice]
+    messagebox.showinfo("结果", result)
+
+    # 检查游戏结束条件
+    if (event_2_choice == event_2_list[0] and choice == "1") or (event_2_choice == event_2_list[2] and choice == "3"):
+        messagebox.showinfo("游戏结束", "游戏结束。")
+        show_welcome()
+    else:
+        random_event()
 
 def event_3():
-    for event_3_choice in event_3_list:
-        print(f"{event_3_choice}")
-        if event_3_choice == event_3_list[0]:
-            print("1. 大声呼救\n2. 硬着头皮做\n3. 把试卷撕了")
-            choices = {"1": "你选择了大声呼救。\n老师以为你有精神病，将你遣返回原籍。",
-                       "2": "你选择了硬着头皮做。\n你考得很差，父母把你骂了一顿。",
-                       "3": "你选择了把试卷撕了。\n老师夸你有胆量，并给你一套高考真题。"}
-        elif event_3_choice == event_3_list[1]:
-            print("1. 巴结这位同学\n2. 去看ta的父母是何方神圣\n3. 偷拍ta家的车，并发布到网上")
-            choices = {"1": "你选择了巴结这位同学。\n你成为了ta的众多跟班之一。",
-                       "2": "你选择了去看ta的父母是何方神圣。\nta的父亲对你说：好好学，争取以后能当上ta的秘书。",
-                       "3": "你选择了偷拍ta家的车，并发布到网上。\n一封邮件让你删除视频，第二天你因为进教室先迈左脚被开除！"}
-        elif event_3_choice == event_3_list[2]:
-            print("1. 先写作业\n2. 先洗澡\n3. 去天台看夜景")
-            choices = {"1": "你选择了先写作业。\n你写到熄灯时间也没写完。",
-                       "2": "你选择了先洗澡。\n你感到很舒服，但是被没写作业的恐慌占据。",
-                       "3": "你选择了去天台看夜景。\n班主任发现了你，让心理老师和你谈心一晚上。你很疲惫。"}
-        else:
-            return
+    for widget in root.winfo_children():
+        widget.destroy()
 
-        while True:
-            choice = input("请选择（输入数字）：")
-            if choice in choices:
-                print(choices[choice])           
-                if event_3_choice == event_3_list[0] and choice == "1" or \
-                   event_3_choice == event_3_list[1] and choice == "3":
-                   print("游戏结束。")
-                   exit()
-                break
-            else:
-                print("无效的选择，请重新输入。")
-    random_event()
+    # 显示事件问题
+    event_3_choice = random.choice(event_3_list)
+    tk.Label(root, text=event_3_choice, font=("Helvetica", 16), wraplength=500).pack(pady=20)
+
+    # 根据事件显示选项
+    if event_3_choice == event_3_list[0]:
+        choices = {"1": "你选择了大声呼救。\n老师以为你有精神病，将你遣返回原籍。",
+                   "2": "你选择了硬着头皮做。\n你考得很差，父母把你骂了一顿。",
+                   "3": "你选择了把试卷撕了。\n老师夸你有胆量，并给你一套高考真题。"}
+    elif event_3_choice == event_3_list[1]:
+        choices = {"1": "你选择了巴结这位同学。\n你成为了ta的众多跟班之一。",
+                   "2": "你选择了去看ta的父母是何方神圣。\nta的父亲对你说：好好学，争取以后能当上ta的秘书。",
+                   "3": "你选择了偷拍ta家的车，并发布到网上。\n一封邮件让你删除视频，第二天你因为进教室先迈左脚被开除！"}
+    elif event_3_choice == event_3_list[2]:
+        choices = {"1": "你选择了先写作业。\n你写到熄灯时间也没写完。",
+                   "2": "你选择了先洗澡。\n你感到很舒服，但是被没写作业的恐慌占据。",
+                   "3": "你选择了去天台看夜景。\n班主任发现了你，让心理老师和你谈心一晚上。你很疲惫。"}
+    else:
+        return
+
+    # 显示选项按钮
+    for key, value in choices.items():
+        tk.Button(root, text=f"选项 {key}", command=lambda k=key: handle_event_3_choice(k, event_3_choice, choices), font=("Helvetica", 14)).pack(pady=5)
+
+# 处理事件 3 的选择
+def handle_event_3_choice(choice, event_3_choice, choices):
+    result = choices[choice]
+    messagebox.showinfo("结果", result)
+
+    # 检查游戏结束条件
+    if (event_3_choice == event_3_list[0] and choice == "1") or (event_3_choice == event_3_list[1] and choice == "3"):
+        messagebox.showinfo("游戏结束", "游戏结束。")
+        show_welcome()
+    else:
+        random_event()
 
 def check_random_results(event, choice):
     if event["question"] == ">>>在宿舍流鼻血，你会？" and choice == "1":
@@ -529,27 +561,28 @@ def check_random_results(event, choice):
         ]
         # 根据权重随机选择结果
         result = random.choices(rd_30_results, weights=[0.6, 0.4])[0]
+        messagebox.showinfo("随机结果", result)
+
         # 如果结果是严重后果，结束游戏
         if result == "你因失血过多进医院了！":
-            print(result)
-            print("游戏结束。")
+            messagebox.showinfo("游戏结束", "游戏结束！")
             show_achievements()
-            exit()
-        else:
-            print(result)  # 输出随机结果
-            return # 返回控制权给调用者
-# 随机事件函数
+            root.quit()
+
 used_event_indices = []
 
 # 随机事件处理
 def random_event():
     global last_event
+    for widget in root.winfo_children():
+        widget.destroy()
+
     # 检查是否所有事件都已触发
     if len(used_event_indices) == len(random_events):
-        print("所有随机事件已体验完，游戏结束！")
+        messagebox.showinfo("游戏结束", "所有随机事件已体验完，游戏结束！")
         show_achievements()
-        exit()
-    
+        return
+
     # 随机选择一个未触发的事件
     while True:
         idx = random.randint(0, len(random_events) - 1)
@@ -560,27 +593,32 @@ def random_event():
     event = random_events[idx]
     last_event = event
 
-    # 显示事件问题和选项
-    print(event["question"])
-    for key, value in event["choices"].items():
-        print(f"{key}. {value}")
+    # 显示事件问题
+    tk.Label(root, text=event["question"], font=("Helvetica", 16), wraplength=500).pack(pady=20)
 
-    # 处理玩家选择
-    while True:
-        choice = input("请选择（输入数字）：")
-        if choice in event["choices"]:
-            print(event["results"][choice])
-            # 检查是否有随机结果
-            check_random_results(event, choice)
-            handle_achievements(event, choice)
-            if "end_game_choices" in event and choice in event["end_game_choices"]:
-                print("游戏结束。")
-                show_achievements()
-                exit()
-            random_event()
-            break
-        else:
-            print("无效的选择，请重新输入。")
+    # 显示选项按钮
+    for key, value in event["choices"].items():
+        tk.Button(root, text=value, command=lambda k=key: handle_random_choice(event, k), font=("Helvetica", 14)).pack(pady=5)
+
+# 处理随机事件的选择
+def handle_random_choice(event, choice):
+    result = event["results"][choice]
+    messagebox.showinfo("结果", result)
+
+    # 检查是否有随机结果
+    check_random_results(event, choice)
+
+    # 检查是否解锁成就
+    handle_achievements(event, choice)
+
+    # 检查是否是游戏结束选项
+    if "end_game_choices" in event and choice in event["end_game_choices"]:
+        messagebox.showinfo("游戏结束", "游戏结束！")
+        show_achievements()
+        return
+
+    # 继续下一个随机事件
+    random_event()
 
 # 处理成就
 def handle_achievements(event, choice):
@@ -588,16 +626,19 @@ def handle_achievements(event, choice):
         achievement = event["achievements"][choice]
         if achievement not in achievements:
             achievements.append(achievement)
-            print(f"恭喜你获得了成就：{achievement}！")
+            messagebox.showinfo("成就解锁", f"恭喜你获得了成就：{achievement}！")
 
 # 显示成就
 def show_achievements():
+    for widget in root.winfo_children():
+        widget.destroy()
+    tk.Label(root, text="你的成就", font=("Helvetica", 20)).pack(pady=20)
     if achievements:
-        print("你已获得以下成就：")
         for achievement in achievements:
-            print(f"- {achievement}")
+            tk.Label(root, text=f"- {achievement}", font=("Helvetica", 14)).pack(pady=5)
     else:
-        print("你还没有获得任何成就。")
+        tk.Label(root, text="你还没有获得任何成就。", font=("Helvetica", 14)).pack(pady=5)
+    tk.Button(root, text="返回主菜单", command=show_welcome, font=("Helvetica", 14)).pack(pady=20)
 
 
 # 这个函数用于测试随机结果的可行性，已经成功，为以后测试做模板，以注释形式保留。
@@ -612,10 +653,12 @@ def show_achievements():
 
 
 if __name__ == "__main__":
-    start_game()
+    # 启动程序
+    show_welcome()
+    root.mainloop()
 
-# Version beta 0.2.11
+# Version beta 0.3.0
 # Designed by Still_Alive with Github Copilot and OpenAI ChatGPT
 # Contributed by WaiJade with DeepSeek and KiMi
-# 2025.04.12 18:01 China Standard Time
+# 2025.04.13 12:09 China Standard Time
 # Thank you for playing!
