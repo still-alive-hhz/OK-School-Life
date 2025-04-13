@@ -377,17 +377,17 @@ random_events = [
 def show_welcome():
     for widget in root.winfo_children():
         widget.destroy()
-    tk.Label(root, text=f"欢迎来到 OK School Life beta {version}", font=("Helvetica", 20)).pack(pady=20)
-    tk.Button(root, text="开始游戏", command=start_game, font=("Helvetica", 14)).pack(pady=10)
-    tk.Button(root, text="查看成就", command=show_achievements, font=("Helvetica", 14)).pack(pady=10)
-    tk.Button(root, text="退出游戏", command=root.quit, font=("Helvetica", 14)).pack(pady=10)
+    tk.Label(root, text=f"欢迎来到 OK School Life beta {version}", font=("", 20)).pack(pady=20)
+    tk.Button(root, text="开始游戏", command=start_game, font=("", 14)).pack(pady=10)
+    tk.Button(root, text="查看成就", command=show_achievements, font=("", 14)).pack(pady=10)
+    tk.Button(root, text="退出游戏", command=root.quit, font=("", 14)).pack(pady=10)
 
 def start_game():
     for widget in root.winfo_children():
         widget.destroy()
-    tk.Label(root, text="你将经历不同的事件和选择，看看你的学校生活会如何发展。", font=("Helvetica", 16), wraplength=500).pack(pady=20)
-    tk.Button(root, text="开始事件", command=main, font=("Helvetica", 14)).pack(pady=10)
-    tk.Button(root, text="返回主菜单", command=show_welcome, font=("Helvetica", 14)).pack(pady=10)
+    tk.Label(root, text="你将经历不同的事件和选择，看看你的学校生活会如何发展。", font=("", 16), wraplength=500).pack(pady=20)
+    tk.Button(root, text="开始事件", command=main, font=("", 14)).pack(pady=10)
+    tk.Button(root, text="返回主菜单", command=show_welcome, font=("", 14)).pack(pady=10)
 
 
         # 测试函数的调用（放到函数外面了，不然无法运行）
@@ -403,27 +403,27 @@ def main():
 
     # 显示初始事件
     start_event = random.choices(event_list, weights=[0.2, 0.5, 0.3])[0]
-    tk.Label(root, text=f"{start_event}。\n你中考考得很好，现在可以选择学校。", font=("Helvetica", 16), wraplength=500).pack(pady=20)
+    tk.Label(root, text=f"{start_event}。\n你中考考得很好，现在可以选择学校。", font=("", 16), wraplength=500).pack(pady=20)
 
     # 显示学校选择按钮
-    tk.Button(root, text="羊县中学", command=lambda: handle_school_choice("1", start_event), font=("Helvetica", 14)).pack(pady=5)
-    tk.Button(root, text="闪西省汗中中学", command=lambda: handle_school_choice("2", start_event), font=("Helvetica", 14)).pack(pady=5)
-    tk.Button(root, text="汗中市龙港高级中学", command=lambda: handle_school_choice("3", start_event), font=("Helvetica", 14)).pack(pady=5)
+    tk.Button(root, text="羊县中学", command=lambda: handle_school_choice("1", start_event), font=("", 14)).pack(pady=5)
+    tk.Button(root, text="闪西省汗中中学", command=lambda: handle_school_choice("2", start_event), font=("", 14)).pack(pady=5)
+    tk.Button(root, text="汗中市龙港高级中学", command=lambda: handle_school_choice("3", start_event), font=("", 14)).pack(pady=5)
 
 # 处理学校选择
 def handle_school_choice(choice, start_event):
     if choice == "1":
-        tk.Label(root, text="你选择了羊县中学。", font=("Helvetica", 14)).pack(pady=10)
+        tk.Label(root, text="你选择了羊县中学。", font=("", 14)).pack(pady=10)
         event_1()
     elif choice == "2":
-        tk.Label(root, text="你选择了闪西省汗中中学。", font=("Helvetica", 14)).pack(pady=10)
+        tk.Label(root, text="你选择了闪西省汗中中学。", font=("", 14)).pack(pady=10)
         event_2()
     elif choice == "3":
         if start_event == event_list[2]:
             messagebox.showinfo("游戏结束", "你家境贫寒，直接破产了！\n游戏结束。")
             show_welcome()
         else:
-            tk.Label(root, text="你选择了汗中市龙港高级中学。", font=("Helvetica", 14)).pack(pady=10)
+            tk.Label(root, text="你选择了汗中市龙港高级中学。", font=("", 14)).pack(pady=10)
             event_3()
 
 def event_1():
@@ -432,7 +432,7 @@ def event_1():
 
     # 显示事件问题
     event_1_choice = random.choice(event_1_list)
-    tk.Label(root, text=event_1_choice, font=("Helvetica", 16), wraplength=500).pack(pady=20)
+    tk.Label(root, text=event_1_choice, font=("", 16), wraplength=500).pack(pady=20)
 
     # 根据事件显示选项
     if event_1_choice == event_1_list[0]:
@@ -455,7 +455,7 @@ def event_1():
 
     # 显示选项按钮
     for key, value in choices.items():
-        tk.Button(root, text=value, command=lambda k=key: handle_event_1_choice(k, event_1_choice, results), font=("Helvetica", 14)).pack(pady=5)
+        tk.Button(root, text=value, command=lambda k=key: handle_event_1_choice(k, event_1_choice, results), font=("", 14)).pack(pady=5)
 
 # 处理事件 1 的选择
 def handle_event_1_choice(choice, event_1_choice, results):
@@ -475,7 +475,7 @@ def event_2():
 
     # 显示事件问题
     event_2_choice = random.choice(event_2_list)
-    tk.Label(root, text=event_2_choice, font=("Helvetica", 16), wraplength=500).pack(pady=20)
+    tk.Label(root, text=event_2_choice, font=("", 16), wraplength=500).pack(pady=20)
 
     # 根据事件显示选项
     if event_2_choice == event_2_list[0]:
@@ -498,7 +498,7 @@ def event_2():
 
     # 显示选项按钮
     for key, value in choices.items():
-        tk.Button(root, text=value, command=lambda k=key: handle_event_2_choice(k, event_2_choice, results), font=("Helvetica", 14)).pack(pady=5)
+        tk.Button(root, text=value, command=lambda k=key: handle_event_2_choice(k, event_2_choice, results), font=("", 14)).pack(pady=5)
 
 # 处理事件 2 的选择
 def handle_event_2_choice(choice, event_2_choice, results):
@@ -518,7 +518,7 @@ def event_3():
 
     # 显示事件问题
     event_3_choice = random.choice(event_3_list)
-    tk.Label(root, text=event_3_choice, font=("Helvetica", 16), wraplength=500).pack(pady=20)
+    tk.Label(root, text=event_3_choice, font=("", 16), wraplength=500).pack(pady=20)
 
     # 根据事件显示选项
     if event_3_choice == event_3_list[0]:
@@ -538,7 +538,7 @@ def event_3():
 
     # 显示选项按钮
     for key, value in choices.items():
-        tk.Button(root, text=f"选项 {key}", command=lambda k=key: handle_event_3_choice(k, event_3_choice, choices), font=("Helvetica", 14)).pack(pady=5)
+        tk.Button(root, text=f"选项 {key}", command=lambda k=key: handle_event_3_choice(k, event_3_choice, choices), font=("", 14)).pack(pady=5)
 
 # 处理事件 3 的选择
 def handle_event_3_choice(choice, event_3_choice, choices):
@@ -594,11 +594,11 @@ def random_event():
     last_event = event
 
     # 显示事件问题
-    tk.Label(root, text=event["question"], font=("Helvetica", 16), wraplength=500).pack(pady=20)
+    tk.Label(root, text=event["question"], font=("", 16), wraplength=500).pack(pady=20)
 
     # 显示选项按钮
     for key, value in event["choices"].items():
-        tk.Button(root, text=value, command=lambda k=key: handle_random_choice(event, k), font=("Helvetica", 14)).pack(pady=5)
+        tk.Button(root, text=value, command=lambda k=key: handle_random_choice(event, k), font=("", 14)).pack(pady=5)
 
 # 处理随机事件的选择
 def handle_random_choice(event, choice):
@@ -632,13 +632,13 @@ def handle_achievements(event, choice):
 def show_achievements():
     for widget in root.winfo_children():
         widget.destroy()
-    tk.Label(root, text="你的成就", font=("Helvetica", 20)).pack(pady=20)
+    tk.Label(root, text="你的成就", font=("", 20)).pack(pady=20)
     if achievements:
         for achievement in achievements:
-            tk.Label(root, text=f"- {achievement}", font=("Helvetica", 14)).pack(pady=5)
+            tk.Label(root, text=f"- {achievement}", font=("", 14)).pack(pady=5)
     else:
-        tk.Label(root, text="你还没有获得任何成就。", font=("Helvetica", 14)).pack(pady=5)
-    tk.Button(root, text="返回主菜单", command=show_welcome, font=("Helvetica", 14)).pack(pady=20)
+        tk.Label(root, text="你还没有获得任何成就。", font=("", 14)).pack(pady=5)
+    tk.Button(root, text="返回主菜单", command=show_welcome, font=("", 14)).pack(pady=20)
 
 
 # 这个函数用于测试随机结果的可行性，已经成功，为以后测试做模板，以注释形式保留。
