@@ -43,6 +43,19 @@ python ok-school-life.py
 - 传奇浴室里的烟哥
 - 突如其来的仪容检查
 - 原神玩家 VS LOL玩家的战争
+- 数学建模活动中的冲突
+- 英语老师的听写突袭
+
+## 🏆 成就系统
+
+游戏中包含多个隐藏成就，例如：
+- **视力5.0**：通过历史考试的特殊选择解锁
+- **开发者の感谢**：在特定事件中鼓励开发者
+- **西格玛人**：在考试中保持冷静
+- **不哑巴英语**：正确发音英语单词
+- **丞相：有容乃大**：在冲突中选择原谅他人
+
+尝试解锁所有成就，记录你的校园旅程！
 
 ## 📌 注意事项
 
@@ -56,14 +69,14 @@ python ok-school-life.py
 
 ## ✅TO-DO
 
-* [ ]  图形化界面
-* [ ]  安卓适配和打包apk
-* [ ]  增添更多内容（包括数值系统，特殊事件库等）
-* [ ]  实现web游玩此python
-* [ ]  对exe进行标准化设置图标等
-* [ ]  大更代码，让事件与脚本分离
-* [ ]  加入劳大复活系统，不同死亡方式不同题库
-* [ ]  对GUI进行优化，如具体样式修改和相对值大小
+* [ ] 图形化界面
+* [ ] 安卓适配和打包apk
+* [ ] 增添更多内容（包括数值系统，特殊事件库等）
+* [ ] 实现web游玩此python
+* [ ] 对exe进行标准化设置图标等
+* [ ] 大更代码，让事件与脚本分离
+* [ ] 加入劳大复活系统，不同死亡方式不同题库
+* [ ] 对GUI进行优化，如具体样式修改和相对值大小
 
 ## 🎆 我们的愿景
 
@@ -72,7 +85,8 @@ python ok-school-life.py
 ## 👨‍💻 开发者
 
 Still_Alive with GitHub Copilot and OpenAI ChatGPT
-
+ [GitHub 主页](https://github.com/still-alive-hhz)
 WaiJade with his clever brain
-
+  [GitHub 主页](https://github.com/CheongSzesuen)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
