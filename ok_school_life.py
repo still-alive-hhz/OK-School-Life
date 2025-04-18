@@ -13,7 +13,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 # 让版本号作为变量方便调用，而不用手动修改
-version = "v0.3.0"
+version = "v0.3.2"
 
 # 初始化主窗口
 root = tk.Tk()
@@ -25,6 +25,16 @@ achievements = []  # 存储玩家获得的成就
 used_event_indices = []  # 存储已触发的事件索引
 current_event = None  # 当前事件
 current_choices = {}  # 当前事件的选项
+
+# 贡献者的变量
+wai = "WaiJade"
+lag = "lagency"
+zhi = "智心逍遥"
+sky = "sky"
+ctb_wai = "(由{wai}贡献)"
+adp_lag = "(由{lag}亲身经历改编)"
+ctb_zhi = "(由{zhi}贡献)"
+ctb_sky = "(由{sky}贡献)"
 
 event_list = ['**你在一个富裕家庭**', '**你在一个普通家庭**', '**你在一个贫穷家庭**']
 event_1_list = ['>>>第一周开家长会，校长讲话时间超出预计时间一小时，导致放学时间延迟，你会？',
@@ -104,7 +114,7 @@ random_events = [
                     "2": "x - π/2",
                     "3": "x + π/2"},
         "results": {"1": "你选择了x + π。\n你错得太离谱，被开除了！",
-                    "2": "你选择了x - π/2。\n你过关！。",
+                    "2": "你选择了x - π/2。\n你过关！",
                     "3": "你选择了x + π/2。\n你考得很差，父母把你骂了一顿。"},
         'end_game_choices': ["1"],
     },
@@ -285,19 +295,19 @@ random_events = [
         'end_game_choices': ["3"],
     },
     {
-        "question": ">>>校园传奇浴室，看到一群烟哥在吸烟，你会？",
+        "question": f">>>校园传奇浴室，看到一群烟哥在吸烟，你会？{ctb_wai}",
         "choices": {"1": "私下向校长举报",
                     "2": "直接开骂",
                     "3": "微笑着说：我也来一根",
                     "4": "无视"},
         "results": {"1": "你选择了私下向校长举报。\n校长高度赞赏你的行为，并在大会上让你上台领奖。",
-                   "2": "你选择了直接开骂。\n烟哥一人一根烟头把你烫没了！",
+                   "2": "你选择了直接开骂。\n烟哥一人一根烟头把你烫得进医院了！",
                    "3": "你选择了微笑着说：我也来一根。\n你们一起吸烟，被老师发现了，心情很不好。",
                    "4": "你选择了无视。\n好像什么也没有发生。"},
         'end_game_choices': ["2"],
     },
     { # event 25
-        "question": ">>>考试的时候，你有点在意的女生/男生坐在你旁边，你会？",
+        "question": f">>>考试的时候，你有点在意的女生/男生坐在你旁边，你会？{ctb_wai}",
         "choices": {"1": "毫不在意，纯西格玛",
                     "2": "看看ta做题做到哪了",
                     "3": "问问ta这道题怎么做",
@@ -369,12 +379,148 @@ random_events = [
                     "2": "你选择了上前打招呼。\n对方在QQ群里说你是正义插队者。",
                     "3": "你选择了大喊“我想她了！”\n对方说“我也想你了。”"},
         'end_game_choices': [],
-        'achievements': {"3": "正义插队者"},
-    }
+        'achievements': {"2": "正义插队者"},
+    },
+    {
+        "question": f">>>隔壁班女生给你表白，你选择？{adp_lag}",
+        "choices": {"1": "欣然接受",
+                    "2": "告诉她你是gay",
+                    "3": "把她臭骂一顿"},
+        "results": {"1": "你选择了欣然接受。\n你感觉很好，但是学习成绩下降.",
+                   "2": "你选择了告诉她你是gay。\n你在学校声望下降，但自己内心十分愉快.",
+                   "3": "你选择了把她臭骂一顿。\n她转头告诉老师，并颠倒黑白。你委屈愤怒至进医院。"},
+        'end_game_choices': ["3"],
+        'achievements': {"2": "成都boy！"},
+    },
+    {
+        "question": f">>>班里大选，你票数不够，你选择：{ctb_zhi}",
+        "choices": {"1": "征战男生宿舍",
+                    "2": "坐视不管，相信姜太公钓鱼，愿者上钩",
+                    "3": "找到不支持你的人，将他们臭骂一顿"},
+        "results": {"1": "你选择了征战男生宿舍。\n你成功征服男生，并感到满足。",    
+                    "2": "你选择了坐视不管。\n你成功落选，心中失落，从此一蹶不振。",
+                    "3": "你选择了找到不支持你的人，将他们臭骂一顿。\n你因违反校规被开除！"},
+        'end_game_choices': ["3"],
+        'achievements': {"1": "不屈的金枪客"},
+    },
+    {
+        "question": f">>>你期中考试得了年级前10，你选择：{adp_lag}",
+        "choices": {"1": "在领奖台上发表“想成为年级前10吗？Just do it！你也可以”的感言",
+                    "2": "在领奖台上对自己喜欢的女生表白",
+                    "3": "在领奖台上高喊“我是神里绫华的dog”"},
+        "results": {"1": "你选择了在领奖台上发表“想成为年级前10吗？Just do it！你也可以”的感言。\n你被嘲笑但毫不在意。",
+                    "2": "你选择了在领奖台上对自己喜欢的女生表白。\n你的老师批评了你，但夸你勇敢。",
+                    "3": "你选择了在领奖台上高喊“我是神里绫华的dog”。\n老师严厉批评了你，你很失落。"},
+        'end_game_choices': [],
+        'achievements': {"1": "孤勇者",
+                        "2": "神里绫华の狗"},
+    },
+    {
+        'question': f">>>校门口的校霸伙同小混混勒索你，你选择：{ctb_sky}",
+        'choices': {'1': "老实交钱",
+                    '2': "事后报警",
+                    '3': '拒绝给钱并将其臭骂一顿',
+                    '4': '转身就跑'},
+        'results': {'1': '你选择了老实交钱。',
+                    '2': '你选择了事后报警。\n你被蜀黍带走，配合调查。同学们造谣说你做坏事被抓了。',
+                    '3': '你选择了拒绝给钱并将其臭骂一顿。\n你被打得眼冒金星！', 
+                    '4': '你选择了转身就跑。\n你被打得奄奄一息，进医院了！'},
+        'end_game_choices': ['4'],
+        'achievements': {'1': '窝囊组加分',
+                         '3': '哎！'},
+    },
+    {
+        'question': f">>>语文课上，老师点人背诵来决定作业，点到你，选择：{ctb_zhi}",
+        'choices': {'1': '沉着应对',
+                    '2': '靠同学指点',
+                    '3': '故意告诉老师不会'},
+        'results': {'1': '你选择了沉着应对。\n你成功背下课文。',
+                    '2': '你选择了靠同学指点。\n你虽然背下来了，但老师对你的打分降低。',
+                    '3': '你选择了故意告诉老师不会。'},
+        'end_game_choices': [],
+        'achievements': {'1': '过目不忘'},
+    },
+    {
+        'question': '>>>考试：“Unit Three”发音最像？',
+        'choices': {'1': '油滴水',
+                    '2': '油腻水',
+                    '3': '乌滴水'},
+        'results': {'1': '你选择了油滴水。\n你被老师批评了。',
+                    '2': '你选择了油腻水。\n你是全班发音最好的。',
+                    '3': '你选择了乌滴水。\n你英语不及格，被请家长了。'},
+        'end_game_choices': ['3'],
+        'achievements': {'2': '不哑巴英语'},
+    },
+    {
+        'question': '考试：“The future belongs to those ___ change it.”',
+        'choices': {'1': 'Donald Trump',
+                    '2': 'whose',
+                    '3': 'who'},
+        'results': {'1': '你选择了Donald Trump。\n你因开玩笑而被停课。',
+                    '2': '你选择了whose。\n你被老师批评了。',
+                    '3': '你选择了who。\n你被老师夸奖了。'},
+        'end_game_choices': ['1'],
+    },
+    {
+        'question': f'>>>数学建模活动，你与组员发生冲突，你选择？{ctb_zhi}',
+        'choices': {'1': '原谅他们',
+                    '2': '报起怒喷',
+                    '3': '选择当李林甫'},
+        'results': {'1': '你选择了原谅他们。\n你们和好。',
+                    '2': '你选择了报起怒喷。\n你被组员冷暴力，得了抑郁症退学！',
+                    '3': '你选择了选择当李林甫。\n你因口蜜腹剑而进医院！'},
+        'end_game_choices': ['2', '3'],
+        'achievements': {'1': '丞相：有容乃大'},
+    },
+    {
+        'question': '>>>英语自习课上，开发者感到很无奈，你选择：',
+        'choices': {'1': '鼓励开发者',
+                    '2': '忽视',},
+        'results': {'1': '你选择了鼓励开发者。\n开发者感谢你的游戏的贡献和支持！',
+                    '2': '你选择了忽视。\n开发者感到很无奈。'},
+        'end_game_choices': [],
+        'achievements': {'1': '开发者の感谢'},
+    },
+    {
+        'question': '>>>体育课活动时间，望着天空，你会想？',
+        'choices': {'1': '世上只有我一个真人，其他都是NPC',
+                    '2': '生活虐我千百遍，我待生活如初恋',
+                    '3': '体育不能碾压别人，就在学习上碾压别人',
+                    '4': '智者不入爱河，建设美丽中国',
+                    '5': '我会选择安静的生活，与一氧化碳握手',
+                    '6': '不要迷恋哥/姐，哥/姐只是个传说',
+                    '7': '想想没写完的日记怎么写',
+                    '8': '好想上网',
+                    '9': '好想回家',
+                    },
+        
+        'results': {'1': '你选择了世上只有我一个真人，其他都是NPC。',
+                    '2': '你选择了生活虐我千百遍，我待生活如初恋。',
+                    '3': '你选择了体育不能碾压别人，就在学习上碾压别人。',
+                    '4': '你选择了智者不入爱河，建设美丽中国。',
+                    '5': '你选择了安静的生活，与一氧化碳握手。',
+                    '6': '你选择了不要迷恋哥/姐，哥/姐只是个传说。',
+                    '7': '你选择了想想没写完的日记怎么写。',
+                    '8': '你选择了好想上网。',
+                    '9': '你选择了好想回家。',
+                    },
+        
+        'achievements': {'1': '开发者の观念',
+                         '2': '乐观',
+                         '3': '学力至上主义',
+                         '4': '爱国',
+                         '5': '伤感',
+                         '6': '“自信”',
+                         '7': '校长',
+                         '8': '网瘾',
+                         '9': 'homesick'},
+    },
 ]
 
 # 显示欢迎界面
 def show_welcome():
+    global used_event_indices
+    used_event_indices = []
     for widget in root.winfo_children():
         widget.destroy()
     tk.Label(root, text=f"欢迎来到 OK School Life beta {version}", font=(20)).pack(pady=20)
@@ -522,15 +668,24 @@ def event_3():
 
     # 根据事件显示选项
     if event_3_choice == event_3_list[0]:
-        choices = {"1": "你选择了大声呼救。\n老师以为你有精神病，将你遣返回原籍。",
-                   "2": "你选择了硬着头皮做。\n你考得很差，父母把你骂了一顿。",
-                   "3": "你选择了把试卷撕了。\n老师夸你有胆量，并给你一套高考真题。"}
+        choices = {"1": "大声呼救",
+                   "2": "硬着头皮做",
+                   "3": "把试卷撕了"}
+        results = {"1": "你选择了大声呼救。\n老师以为你有精神病，将你遣返回原籍。",
+                     "2": "你选择了硬着头皮做。\n你考得很差，父母把你骂了一顿。",
+                     "3": "你选择了把试卷撕了。\n老师夸你有胆量，并给你一套高考真题。"}
     elif event_3_choice == event_3_list[1]:
-        choices = {"1": "你选择了巴结这位同学。\n你成为了ta的众多跟班之一。",
+        choices = {"1": "巴结这位同学",
+                   "2": "去看ta的父母是何方神圣",
+                   "3": "偷拍ta家的车，并发布到网上"}
+        results = {"1": "你选择了巴结这位同学。\n你成为了ta的众多跟班之一。",
                    "2": "你选择了去看ta的父母是何方神圣。\nta的父亲对你说：好好学，争取以后能当上ta的秘书。",
                    "3": "你选择了偷拍ta家的车，并发布到网上。\n一封邮件让你删除视频，第二天你因为进教室先迈左脚被开除！"}
     elif event_3_choice == event_3_list[2]:
-        choices = {"1": "你选择了先写作业。\n你写到熄灯时间也没写完。",
+        choices = {"1": "先写作业",
+                   "2": "先洗澡",
+                   "3": "去天台看夜景"}
+        results = {"1": "你选择了先写作业。\n你写到熄灯时间也没写完。",
                    "2": "你选择了先洗澡。\n你感到很舒服，但是被没写作业的恐慌占据。",
                    "3": "你选择了去天台看夜景。\n班主任发现了你，让心理老师和你谈心一晚上。你很疲惫。"}
     else:
@@ -538,11 +693,11 @@ def event_3():
 
     # 显示选项按钮
     for key, value in choices.items():
-        tk.Button(root, text=f"选项 {key}", command=lambda k=key: handle_event_3_choice(k, event_3_choice, choices), font=(14)).pack(pady=5)
+        tk.Button(root, text=value, command=lambda k=key: handle_event_3_choice(k, event_3_choice, results),font=(14)).pack(pady=5)
 
 # 处理事件 3 的选择
-def handle_event_3_choice(choice, event_3_choice, choices):
-    result = choices[choice]
+def handle_event_3_choice(choice, event_3_choice, results):
+    result = results[choice]
     messagebox.showinfo("结果", result)
 
     # 检查游戏结束条件
@@ -555,16 +710,31 @@ def handle_event_3_choice(choice, event_3_choice, choices):
 def check_random_results(event, choice):
     if event["question"] == ">>>在宿舍流鼻血，你会？" and choice == "1":
         # 定义随机结果
-        rd_30_results = [
+        rd_results = [
             "流了几分钟就不流了，没事。",
             "你因失血过多进医院了！"
         ]
         # 根据权重随机选择结果
-        result = random.choices(rd_30_results, weights=[0.6, 0.4])[0]
+        result = random.choices(rd_results, weights=[0.6, 0.4])[0]
         messagebox.showinfo("随机结果", result)
 
         # 如果结果是严重后果，结束游戏
         if result == "你因失血过多进医院了！":
+            messagebox.showinfo("游戏结束", "游戏结束！")
+            show_achievements()
+            root.quit()
+    elif event["question"] == ">>>语文课上，老师点人背诵来决定作业，点到你，选择：{ctb_zhi}" and choice == "3":
+        # 定义随机结果
+        rd_results = [
+            '老师告诉你下课后给她背，并免了作业。',
+            '老师罚全班作业，你被同学鄙夷。',
+            '老师大骂全班，你被同学们打进医院！',
+        ]
+        # 根据权重随机选择结果
+        result = random.choices(rd_results, weights=[0.15, 0.7,0.15])[0]
+        messagebox.showinfo("随机结果", result)
+        # 如果结果是严重后果，结束游戏
+        if result == "老师大骂全班，你被同学们打进医院！":
             messagebox.showinfo("游戏结束", "游戏结束！")
             show_achievements()
             root.quit()
@@ -657,8 +827,8 @@ if __name__ == "__main__":
     show_welcome()
     root.mainloop()
 
-# Version beta 0.3.0
+# Version beta 0.3.2
 # Designed by Still_Alive with Github Copilot and OpenAI ChatGPT
 # Contributed by WaiJade with DeepSeek and KiMi
-# 2025.04.13 12:09 China Standard Time
+# 2025.04.18 22:50 China Standard Time
 # Thank you for playing!
