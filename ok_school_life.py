@@ -13,12 +13,12 @@ import tkinter as tk
 from tkinter import messagebox
 
 # 让版本号作为变量方便调用，而不用手动修改
-version = "v0.3.2"
+version = "v0.3.3"
 
 # 初始化主窗口
 root = tk.Tk()
 root.title("OK School Life")
-root.geometry("600x400")
+root.geometry("1280x720")
 
 # 全局变量
 achievements = []  # 存储玩家获得的成就
@@ -26,15 +26,20 @@ used_event_indices = []  # 存储已触发的事件索引
 current_event = None  # 当前事件
 current_choices = {}  # 当前事件的选项
 
+# 添加全局变量来跟踪当前事件索引
+current_event_1_index = 0
+current_event_2_index = 0
+current_event_3_index = 0
+
 # 贡献者的变量
 wai = "WaiJade"
 lag = "lagency"
 zhi = "智心逍遥"
 sky = "sky"
-ctb_wai = "(由{wai}贡献)"
-adp_lag = "(由{lag}亲身经历改编)"
-ctb_zhi = "(由{zhi}贡献)"
-ctb_sky = "(由{sky}贡献)"
+ctb_wai = f"(由{wai}贡献)"
+adp_lag = f"(由{lag}亲身经历改编)"
+ctb_zhi = f"(由{zhi}贡献)"
+ctb_sky = f"(由{sky}贡献)"
 
 event_list = ['**你在一个富裕家庭**', '**你在一个普通家庭**', '**你在一个贫穷家庭**']
 event_1_list = ['>>>第一周开家长会，校长讲话时间超出预计时间一小时，导致放学时间延迟，你会？',
@@ -523,6 +528,15 @@ def show_welcome():
     used_event_indices = []
     for widget in root.winfo_children():
         widget.destroy()
+    
+    # 加载图片
+    try:
+        welcome_image = tk.PhotoImage(file="/Users/houhaozhe/Documents/GitHub/OK-School-Life/welcome_min.png") # 确保图片文件名为 welcome.png，放在同一目录下
+        tk.Label(root, image=welcome_image).pack(pady=10)
+        root.welcome_image = welcome_image  # 防止图片被垃圾回收
+    except Exception as e:
+        print(f"无法加载图片: {e}")
+
     tk.Label(root, text=f"欢迎来到 OK School Life beta {version}", font=(20)).pack(pady=20)
     tk.Button(root, text="开始游戏", command=start_game, font=(14)).pack(pady=10)
     tk.Button(root, text="查看成就", command=show_achievements, font=(14)).pack(pady=10)
@@ -572,12 +586,22 @@ def handle_school_choice(choice, start_event):
             tk.Label(root, text="你选择了汗中市龙港高级中学。", font=(14)).pack(pady=10)
             event_3()
 
+# 添加一个全局变量来跟踪当前事件索引
+current_event_1_index = 0
+
 def event_1():
+    global current_event_1_index
+
+    # 检查是否还有未执行的事件
+    if current_event_1_index >= len(event_1_list):
+        random_event()  # 继续随机事件
+        return
+
     for widget in root.winfo_children():
         widget.destroy()
 
-    # 显示事件问题
-    event_1_choice = random.choice(event_1_list)
+    # 显示当前事件问题
+    event_1_choice = event_1_list[current_event_1_index]
     tk.Label(root, text=event_1_choice, font=(16), wraplength=500).pack(pady=20)
 
     # 根据事件显示选项
@@ -605,6 +629,8 @@ def event_1():
 
 # 处理事件 1 的选择
 def handle_event_1_choice(choice, event_1_choice, results):
+    global current_event_1_index
+
     result = results[choice]
     messagebox.showinfo("结果", result)
 
@@ -613,14 +639,23 @@ def handle_event_1_choice(choice, event_1_choice, results):
         messagebox.showinfo("游戏结束", "游戏结束。")
         show_welcome()
     else:
-        random_event()
+        # 继续下一个事件
+        current_event_1_index += 1
+        event_1()
 
 def event_2():
+    global current_event_2_index
+
+    # 检查是否还有未执行的事件
+    if current_event_2_index >= len(event_2_list):
+        random_event()  # 继续随机事件
+        return
+
     for widget in root.winfo_children():
         widget.destroy()
 
-    # 显示事件问题
-    event_2_choice = random.choice(event_2_list)
+    # 显示当前事件问题
+    event_2_choice = event_2_list[current_event_2_index]
     tk.Label(root, text=event_2_choice, font=(16), wraplength=500).pack(pady=20)
 
     # 根据事件显示选项
@@ -648,6 +683,8 @@ def event_2():
 
 # 处理事件 2 的选择
 def handle_event_2_choice(choice, event_2_choice, results):
+    global current_event_2_index
+
     result = results[choice]
     messagebox.showinfo("结果", result)
 
@@ -656,14 +693,23 @@ def handle_event_2_choice(choice, event_2_choice, results):
         messagebox.showinfo("游戏结束", "游戏结束。")
         show_welcome()
     else:
-        random_event()
+        # 继续下一个事件
+        current_event_2_index += 1
+        event_2()
 
 def event_3():
+    global current_event_3_index
+
+    # 检查是否还有未执行的事件
+    if current_event_3_index >= len(event_3_list):
+        random_event()  # 继续随机事件
+        return
+
     for widget in root.winfo_children():
         widget.destroy()
 
-    # 显示事件问题
-    event_3_choice = random.choice(event_3_list)
+    # 显示当前事件问题
+    event_3_choice = event_3_list[current_event_3_index]
     tk.Label(root, text=event_3_choice, font=(16), wraplength=500).pack(pady=20)
 
     # 根据事件显示选项
@@ -693,10 +739,12 @@ def event_3():
 
     # 显示选项按钮
     for key, value in choices.items():
-        tk.Button(root, text=value, command=lambda k=key: handle_event_3_choice(k, event_3_choice, results),font=(14)).pack(pady=5)
+        tk.Button(root, text=value, command=lambda k=key: handle_event_3_choice(k, event_3_choice, results), font=(14)).pack(pady=5)
 
 # 处理事件 3 的选择
 def handle_event_3_choice(choice, event_3_choice, results):
+    global current_event_3_index
+
     result = results[choice]
     messagebox.showinfo("结果", result)
 
@@ -705,7 +753,9 @@ def handle_event_3_choice(choice, event_3_choice, results):
         messagebox.showinfo("游戏结束", "游戏结束。")
         show_welcome()
     else:
-        random_event()
+        # 继续下一个事件
+        current_event_3_index += 1
+        event_3()
 
 def check_random_results(event, choice):
     if event["question"] == ">>>在宿舍流鼻血，你会？" and choice == "1":
@@ -827,8 +877,8 @@ if __name__ == "__main__":
     show_welcome()
     root.mainloop()
 
-# Version beta 0.3.2
+# Version beta 0.3.3
 # Designed by Still_Alive with Github Copilot and OpenAI ChatGPT
-# Contributed by WaiJade with DeepSeek and KiMi
-# 2025.04.18 22:50 China Standard Time
+# Contributed by WaiJade with DeepSeek and Kimi
+# 2025.04.19 03:36 China Standard Time
 # Thank you for playing!
