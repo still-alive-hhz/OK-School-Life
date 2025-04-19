@@ -18,6 +18,7 @@ from tkinter import messagebox
 # 系统相关
 import os
 import sys
+from sys import exit
 # 引入 json 模块
 import json
 
