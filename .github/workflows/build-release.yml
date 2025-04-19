@@ -38,7 +38,7 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
-          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/Ok_School_Life.py
+          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
           $version = $env:GITHUB_REF_NAME.Substring(1)
           $newName = "Ok_School_Life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
@@ -90,7 +90,7 @@ jobs:
               export CXX=aarch64-linux-gnu-g++
           fi
           
-          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/Ok_School_Life.py
+          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
           version=${GITHUB_REF#refs/tags/v}
           mv dist/Ok_School_Life "dist/Ok_School_Life-linux-${{ matrix.arch }}-$version"
@@ -131,7 +131,7 @@ jobs:
               export ARCHFLAGS="-arch x86_64"
           fi
           
-          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/Ok_School_Life.py
+          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
           version=${GITHUB_REF#refs/tags/v}
           mv dist/Ok_School_Life "dist/Ok_School_Life-macos-${{ matrix.arch }}-$version"
@@ -180,7 +180,7 @@ jobs:
             if [ ${#matches[@]} -eq 0 ] || [ ! -e "${matches[0]}" ]; then
               echo "❌ 文件匹配失败: $pattern"
               missing_files=1
-            else:
+            else
               echo "✅ 文件存在: ${matches[0]}"
               file "${matches[0]}"
             fi
