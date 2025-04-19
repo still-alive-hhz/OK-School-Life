@@ -18,29 +18,65 @@ from tkinter import messagebox
 # 系统相关
 import os
 import sys
-from sys import exit
 # 引入 json 模块
 import json
 
-# 获取当前文件所在目录
-if getattr(sys, 'frozen', False):  # 如果是打包后的环境
-    current_dir = os.path.dirname(sys.executable)  # 获取打包后可执行文件的目录
-else:  # 如果是开发环境
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+# 定义 current_dir 为当前脚本所在目录
+current_dir = os.path.dirname(os.path.abspath(__file__))
 
-# 构建 JSON 文件路径
-json_file_path = os.path.join(current_dir, "..", "data", "events.json")  # 先到上一级目录，再进入 data 目录
+def get_resource_path(relative_path):
+    """获取资源文件的绝对路径"""
+    if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(current_dir, relative_path)
 
-# 防止 JSON 文件不存在
-try:
-    with open(json_file_path, "r", encoding="utf-8") as f:
-        events_data = json.load(f)
-except FileNotFoundError:
-    print(f"错误：未找到文件 {json_file_path}！请确保文件存在。")
-    exit(1)
-except json.JSONDecodeError:
-    print(f"错误：文件 {json_file_path} 格式无效！请检查 JSON 文件内容。")
-    exit(1)
+# 贡献者的变量
+wai = "WaiJade"
+lag = "lagency"
+zhi = "智心逍遥"
+sky = "sky"
+ctb_wai = f"(由{wai}贡献)"
+adp_lag = f"(由{lag}亲身经历改编)"
+ctb_zhi = f"(由{zhi}贡献)"
+ctb_sky = f"(由{sky}贡献)"
+
+# 加载 JSON 文件并处理异常
+def load_json_file(relative_path):
+    """加载 JSON 文件并返回解析后的数据"""
+    json_file_path = get_resource_path(relative_path)
+    try:
+        with open(json_file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        
+        # 替换占位符为贡献者信息，放在引入的函数里，并将变量提前。
+        contributors = {
+            "{ctb_wai}": ctb_wai,
+            "{adp_lag}": adp_lag,
+            "{ctb_zhi}": ctb_zhi,
+            "{ctb_sky}": ctb_sky
+        }
+        
+        def replace_placeholders(obj):
+            if isinstance(obj, str):
+                for placeholder, value in contributors.items():
+                    obj = obj.replace(placeholder, value)
+                return obj
+            elif isinstance(obj, list):
+                return [replace_placeholders(item) for item in obj]
+            elif isinstance(obj, dict):
+                return {key: replace_placeholders(value) for key, value in obj.items()}
+            return obj
+        
+        return replace_placeholders(data)
+    except FileNotFoundError:
+        print(f"错误：未找到文件 {json_file_path}！请确保文件存在。")
+        exit(1)
+    except json.JSONDecodeError:
+        print(f"错误：文件 {json_file_path} 格式无效！请检查 JSON 文件内容。")
+        exit(1)
+
+# 加载事件数据
+events_data = load_json_file("../data/events.json")
 
 # 提取事件列表
 event_list = events_data["event_list"]
@@ -65,20 +101,15 @@ current_event_1_index = 0
 current_event_2_index = 0
 current_event_3_index = 0
 
-# 贡献者的变量
-wai = "WaiJade"
-lag = "lagency"
-zhi = "智心逍遥"
-sky = "sky"
-ctb_wai = f"(由{wai}贡献)"
-adp_lag = f"(由{lag}亲身经历改编)"
-ctb_zhi = f"(由{zhi}贡献)"
-ctb_sky = f"(由{sky}贡献)"
 
 # 使用自定义函数来方便每次调用
 def get_asset_path(*path_segments):
-    # 获取 assets 文件夹下的资源路径
-    return os.path.join(current_dir, "..", "assets", *path_segments)
+    """获取资源文件的绝对路径"""
+    if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(os.path.join(current_dir, ".."))
+    return os.path.join(base_path, "assets", *path_segments)
 
 # 显示欢迎界面
 def show_welcome():

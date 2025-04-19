@@ -44,6 +44,10 @@ jobs:
           $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
           Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
           dir dist
+        shell: pwsh
+
+      - run: python --version
+      - run: pip freeze
 
       - uses: actions/upload-artifact@v4
         with:
@@ -92,6 +96,9 @@ jobs:
           mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
           file dist/ok_school_life-linux-${{ matrix.arch }}-*
 
+      - run: python --version
+      - run: pip freeze
+
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.arch }}
@@ -129,6 +136,9 @@ jobs:
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
           file dist/ok_school_life-macos-${{ matrix.arch }}-*
+
+      - run: python --version
+      - run: pip freeze
 
       - uses: actions/upload-artifact@v4
         with:
