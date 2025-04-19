@@ -12,14 +12,16 @@ Copyright © 2025 Still_Alive & WaiJade
 version = "v0.3.4"
 
 import random
-#图形化界面
+# 图形化界面
 import tkinter as tk
 from tkinter import messagebox
-#系统相关
+# 系统相关
 import os
 import sys
-#引入json模块
+from sys import exit
+# 引入 json 模块
 import json
+
 # 获取当前文件所在目录
 if getattr(sys, 'frozen', False):  # 如果是打包后的环境
     current_dir = os.path.dirname(sys.executable)  # 获取打包后可执行文件的目录
@@ -29,7 +31,7 @@ else:  # 如果是开发环境
 # 构建 JSON 文件路径
 json_file_path = os.path.join(current_dir, "..", "data", "events.json")  # 先到上一级目录，再进入 data 目录
 
-#防止json文件不存在
+# 防止 JSON 文件不存在
 try:
     with open(json_file_path, "r", encoding="utf-8") as f:
         events_data = json.load(f)
@@ -73,10 +75,9 @@ adp_lag = f"(由{lag}亲身经历改编)"
 ctb_zhi = f"(由{zhi}贡献)"
 ctb_sky = f"(由{sky}贡献)"
 
-
-#使用自定义函数来方便每次调用
+# 使用自定义函数来方便每次调用
 def get_asset_path(*path_segments):
-    """获取 assets 文件夹下的资源路径"""
+    # 获取 assets 文件夹下的资源路径
     return os.path.join(current_dir, "..", "assets", *path_segments)
 
 # 显示欢迎界面
@@ -88,8 +89,8 @@ def show_welcome():
     
     # 加载图片
     try:
-        #利用函数来获取图片路径
-        #路径采用相对路径，图片在 assets/images/ 目录下
+        # 利用函数来获取图片路径
+        # 路径采用相对路径，图片在 assets/images/ 目录下
         welcome_min_image_path = get_asset_path("images", "welcome_min.png")
         welcome_image = tk.PhotoImage(file=welcome_min_image_path)
         tk.Label(root, image=welcome_image).pack(pady=10)

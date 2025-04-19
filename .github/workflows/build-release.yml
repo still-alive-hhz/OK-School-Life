@@ -170,7 +170,7 @@ jobs:
             if [ ${#matches[@]} -eq 0 ] || [ ! -e "${matches[0]}" ]; then
               echo "❌ 文件匹配失败: $pattern"
               missing_files=1
-            else
+            else:
               echo "✅ 文件存在: ${matches[0]}"
               file "${matches[0]}"
             fi
