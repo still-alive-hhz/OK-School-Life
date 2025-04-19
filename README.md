@@ -1,6 +1,7 @@
 # 🎮 OK School Life - 校园生活模拟游戏
 
 *一个充满惊喜(惊吓)的校园模拟游戏*
+![1745061328893](images/README/1745061328893.png)
 
 ## 📖 游戏简介
 
@@ -93,7 +94,7 @@ WaiJade with his clever brain
 ## 📊 项目统计
 
 ![Visitor Count](https://visitor-badge.laobi.icu/badge?page_id=still-alive-hhz.OK-School-Life) ![GitHub issues](https://img.shields.io/github/issues/still-alive-hhz/OK-School-Life)
-![GitHub stars](https://img.shields.io/github/stars/still-alive-hhz/OK-School-Life?style=social) ![GitHub forks](https://img.shields.io/github/forks/still-alive-hhz/OK-School-Life) !
+![GitHub stars](https://img.shields.io/github/stars/still-alive-hhz/OK-School-Life?style=social) ![GitHub forks](https://img.shields.io/github/forks/still-alive-hhz/OK-School-Life) 
 
 ![GitHub Stats](https://github-readme-stats.vercel.app/api/pin/?username=still-alive-hhz&repo=OK-School-Life&show_owner=true)
 
@@ -102,6 +103,4 @@ WaiJade with his clever brain
 ## 🌟 最近活动
 
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/still-alive-hhz/OK-School-Life) ![GitHub Commit Activity](https://img.shields.io/github/commit-activity/y/still-alive-hhz/OK-School-Life)
-
-
 
