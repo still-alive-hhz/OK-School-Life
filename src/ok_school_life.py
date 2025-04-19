@@ -28,9 +28,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 def get_resource_path(relative_path):
     """获取资源文件的绝对路径"""
     if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
-        base_path = sys._MEIPASS
+        base_path = os.path.join(sys._MEIPASS, "data")
     else:
-        base_path = current_dir
+        base_path = os.path.join(current_dir, "data")
     return os.path.join(base_path, relative_path)
 
 # 贡献者的变量
@@ -88,6 +88,15 @@ event_2_list = events_data["event_2_list"]
 event_3_list = events_data["event_3_list"]
 random_events = events_data["random_events"]
 
+# 使用自定义函数来方便每次调用
+def get_asset_path(*path_segments):
+    """获取资源文件的绝对路径"""
+    if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
+        base_path = sys._MEIPASS
+    else:
+        base_path = os.path.abspath(os.path.join(current_dir, ".."))
+    return os.path.join(base_path, "assets", *path_segments)
+
 # 初始化主窗口
 root = tk.Tk()
 root.title("OK School Life")
@@ -105,14 +114,6 @@ current_event_2_index = 0
 current_event_3_index = 0
 
 
-# 使用自定义函数来方便每次调用
-def get_asset_path(*path_segments):
-    """获取资源文件的绝对路径"""
-    if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(os.path.join(current_dir, ".."))
-    return os.path.join(base_path, "assets", *path_segments)
 
 # 显示欢迎界面
 def show_welcome():
