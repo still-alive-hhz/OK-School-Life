@@ -28,8 +28,10 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 def get_resource_path(relative_path):
     """获取资源文件的绝对路径"""
     if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(current_dir, relative_path)
+        base_path = sys._MEIPASS
+    else:
+        base_path = current_dir
+    return os.path.join(base_path, relative_path)
 
 # 贡献者的变量
 wai = "WaiJade"
