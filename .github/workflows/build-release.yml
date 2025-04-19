@@ -38,11 +38,11 @@ jobs:
       - run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
-          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
+          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/Ok_School_Life.py
           
           $version = $env:GITHUB_REF_NAME.Substring(1)
-          $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
-          Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
+          $newName = "Ok_School_Life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
+          Rename-Item -Path "dist\Ok_School_Life.exe" -NewName $newName
           dir dist
         shell: pwsh
 
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_suffix }}
-          path: dist/ok_school_life-${{ matrix.artifact_suffix }}-*
+          path: dist/Ok_School_Life-${{ matrix.artifact_suffix }}-*
 
   build-linux:
     name: Build Linux (${{ matrix.arch }})
@@ -90,11 +90,11 @@ jobs:
               export CXX=aarch64-linux-gnu-g++
           fi
           
-          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
+          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/Ok_School_Life.py
           
           version=${GITHUB_REF#refs/tags/v}
-          mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
-          file dist/ok_school_life-linux-${{ matrix.arch }}-*
+          mv dist/Ok_School_Life "dist/Ok_School_Life-linux-${{ matrix.arch }}-$version"
+          file dist/Ok_School_Life-linux-${{ matrix.arch }}-*
 
       - run: python --version
       - run: pip freeze
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.arch }}
-          path: dist/ok_school_life-linux-${{ matrix.arch }}-*
+          path: dist/Ok_School_Life-linux-${{ matrix.arch }}-*
 
   build-macos:
     name: Build macOS (${{ matrix.arch }})
@@ -131,11 +131,11 @@ jobs:
               export ARCHFLAGS="-arch x86_64"
           fi
           
-          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
+          pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/Ok_School_Life.py
           
           version=${GITHUB_REF#refs/tags/v}
-          mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
-          file dist/ok_school_life-macos-${{ matrix.arch }}-*
+          mv dist/Ok_School_Life "dist/Ok_School_Life-macos-${{ matrix.arch }}-$version"
+          file dist/Ok_School_Life-macos-${{ matrix.arch }}-*
 
       - run: python --version
       - run: pip freeze
@@ -143,7 +143,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
-          path: dist/ok_school_life-macos-${{ matrix.arch }}-*
+          path: dist/Ok_School_Life-macos-${{ matrix.arch }}-*
 
   create-release:
     name: Create Release
@@ -166,12 +166,12 @@ jobs:
           
           # 新版验证逻辑（精确匹配带版本号的文件）
           declare -a required_files=(
-            "ok_school_life-windows-x64-*.exe"
-            "ok_school_life-windows-x86-*.exe"
-            "ok_school_life-linux-x64-*"
-            "ok_school_life-linux-arm64-*"
-            "ok_school_life-macos-x64-*"
-            "ok_school_life-macos-arm64-*"
+            "Ok_School_Life-windows-x64-*.exe"
+            "Ok_School_Life-windows-x86-*.exe"
+            "Ok_School_Life-linux-x64-*"
+            "Ok_School_Life-linux-arm64-*"
+            "Ok_School_Life-macos-x64-*"
+            "Ok_School_Life-macos-arm64-*"
           )
           
           missing_files=0
@@ -215,7 +215,7 @@ jobs:
         id: build-info
         run: |
           echo "time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "platforms= 🪟 Windows (x86/x64) | 🍎 macOS (ARM64/x64) | 🐧 Linux (x64/ARM64)" >> $GITHUB_OUTPUT
+          echo "platforms= 🪟 Windows (x64/x86) | 🍎 macOS (ARM64/x64) | 🐧 Linux (x64/ARM64)" >> $GITHUB_OUTPUT
 
       - uses: softprops/action-gh-release@v1
         with:
@@ -239,7 +239,7 @@ jobs:
             ### 🔍 文件验证
             ```bash
             # 检查文件类型
-            file ok_school_life-*
+            file Ok_School_Life-*
             ```
           files: |
-            release-files/ok_school_life-*
+            release-files/Ok_School_Life-*
