@@ -186,12 +186,14 @@ jobs:
         run: |
           git fetch --tags --force
           current_tag="${{ github.ref_name }}"
-          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "HEAD")
-          
-          if [ "$previous_tag" = "HEAD" ]; then
-            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)")
+          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "")
+
+          if [ -z "$previous_tag" ]; then
+            echo "No previous tag found. Generating changelog for all commits."
+            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)%n%n%b")
           else
-            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)" "$previous_tag".."$current_tag")
+            echo "Generating changelog from $previous_tag to $current_tag."
+            messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)%n%n%b" "$previous_tag".."$current_tag")
           fi
           
           delimiter=$(openssl rand -hex 16)
@@ -216,6 +218,7 @@ jobs:
             ${{ steps.build-info.outputs.platforms }}
             
             ### 📝 更新日志
+            #### 从 ${{ steps.changelog.outputs.previous_tag }} 到 ${{ github.ref_name }}
             ${{ steps.changelog.outputs.changelog }}
             
             ### 🛠️ 构建信息
