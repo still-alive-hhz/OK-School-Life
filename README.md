@@ -70,7 +70,7 @@ python ok-school-life.py
 
 ## ✅TO-DO
 
-* [ ]  图形化界面
+* [X]  图形化界面
 * [ ]  安卓适配和打包apk
 * [ ]  增添更多内容（包括数值系统，特殊事件库等）
 * [ ]  实现web游玩此python
