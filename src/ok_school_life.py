@@ -124,7 +124,7 @@ def main():
 
     # 显示初始事件
     start_event = random.choices(event_list, weights=[0.2, 0.5, 0.3])[0]
-    tk.Label(root, text=f"{start_event}。\n你中考考得很好，现在可以选择学校。", font=(16), wraplength=500).pack(pady=20)
+    tk.Label(root, text=f"{start_event}\n你中考考得很好，现在可以选择学校。", font=(16), wraplength=500).pack(pady=20)
 
     # 显示学校选择按钮
     tk.Button(root, text="羊县中学", command=lambda: handle_school_choice("1", start_event), font=(14)).pack(pady=5)
