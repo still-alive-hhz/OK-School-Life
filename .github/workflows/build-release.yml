@@ -193,9 +193,9 @@ jobs:
         run: |
           git fetch --tags --force
           current_tag="${{ github.ref_name }}"
-          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "")
+          previous_tag=$(git describe --tags --abbrev=0 "$current_tag^" 2>/dev/null || echo "HEAD")
           
-          if [ -z "$previous_tag" ]; then
+          if [ "$previous_tag" = "HEAD" ]; then
             messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)")
           else
             messages=$(git log --reverse --pretty=format:"- %s%n  ↳ 提交人: %an (%h)" "$previous_tag".."$current_tag")
@@ -210,7 +210,7 @@ jobs:
         id: build-info
         run: |
           echo "time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
-          echo "platforms=🐧 Linux (x64/ARM64) | 🍎 macOS (ARM64/x64) | 🪟 Windows (x86/x64)" >> $GITHUB_OUTPUT
+          echo "platforms= 🪟 Windows (x86/x64)" >> $GITHUB_OUTPUT | 🍎 macOS (ARM64/x64) | 🐧 Linux (x64/ARM64)
 
       - uses: softprops/action-gh-release@v1
         with:
