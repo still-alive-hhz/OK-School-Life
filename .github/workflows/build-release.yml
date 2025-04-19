@@ -41,8 +41,8 @@ jobs:
           pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
           $version = $env:GITHUB_REF_NAME.Substring(1)
-          $newName = "Ok_School_Life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
-          Rename-Item -Path "dist\Ok_School_Life.exe" -NewName $newName
+          $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
+          Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
           dir dist
         shell: pwsh
 
@@ -52,7 +52,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_suffix }}
-          path: dist/Ok_School_Life-${{ matrix.artifact_suffix }}-*
+          path: dist/ok_school_life-${{ matrix.artifact_suffix }}-*
 
   build-linux:
     name: Build Linux (${{ matrix.arch }})
@@ -93,8 +93,8 @@ jobs:
           pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
           version=${GITHUB_REF#refs/tags/v}
-          mv dist/Ok_School_Life "dist/Ok_School_Life-linux-${{ matrix.arch }}-$version"
-          file dist/Ok_School_Life-linux-${{ matrix.arch }}-*
+          mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
+          file dist/ok_school_life-linux-${{ matrix.arch }}-*
 
       - run: python --version
       - run: pip freeze
@@ -102,7 +102,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.arch }}
-          path: dist/Ok_School_Life-linux-${{ matrix.arch }}-*
+          path: dist/ok_school_life-linux-${{ matrix.arch }}-*
 
   build-macos:
     name: Build macOS (${{ matrix.arch }})
@@ -134,8 +134,8 @@ jobs:
           pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
           version=${GITHUB_REF#refs/tags/v}
-          mv dist/Ok_School_Life "dist/Ok_School_Life-macos-${{ matrix.arch }}-$version"
-          file dist/Ok_School_Life-macos-${{ matrix.arch }}-*
+          mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
+          file dist/ok_school_life-macos-${{ matrix.arch }}-*
 
       - run: python --version
       - run: pip freeze
@@ -143,7 +143,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
-          path: dist/Ok_School_Life-macos-${{ matrix.arch }}-*
+          path: dist/ok_school_life-macos-${{ matrix.arch }}-*
 
   create-release:
     name: Create Release
@@ -166,12 +166,12 @@ jobs:
           
           # 新版验证逻辑（精确匹配带版本号的文件）
           declare -a required_files=(
-            "Ok_School_Life-windows-x64-*.exe"
-            "Ok_School_Life-windows-x86-*.exe"
-            "Ok_School_Life-linux-x64-*"
-            "Ok_School_Life-linux-arm64-*"
-            "Ok_School_Life-macos-x64-*"
-            "Ok_School_Life-macos-arm64-*"
+            "ok_school_life-windows-x64-*.exe"
+            "ok_school_life-windows-x86-*.exe"
+            "ok_school_life-linux-x64-*"
+            "ok_school_life-linux-arm64-*"
+            "ok_school_life-macos-x64-*"
+            "ok_school_life-macos-arm64-*"
           )
           
           missing_files=0
@@ -239,7 +239,7 @@ jobs:
             ### 🔍 文件验证
             ```bash
             # 检查文件类型
-            file Ok_School_Life-*
+            file ok_school_life-*
             ```
           files: |
-            release-files/Ok_School_Life-*
+            release-files/ok_school_life-*
