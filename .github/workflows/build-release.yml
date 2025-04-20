@@ -3,7 +3,7 @@ name: Build and Release Multi-Platform
 on:
   push:
     tags:
-      - 'v*'
+      - 'wv*'  # 仅当标签以 'wv' 开头时触发
 
 permissions:
   contents: write
@@ -40,8 +40,8 @@ jobs:
           pip install pyinstaller
           pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
-          $version = $env:GITHUB_REF_NAME.Substring(1)
-          $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
+          $version = $env:GITHUB_REF_NAME.Substring(2)  # 去掉 'wv' 前缀
+          $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version-WaiJade_Version${{ matrix.file_ext }}"
           Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
           dir dist
         shell: pwsh
@@ -92,8 +92,8 @@ jobs:
           
           pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
-          version=${GITHUB_REF#refs/tags/v}
-          mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
+          version=${GITHUB_REF#refs/tags/wv}
+          mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version-WaiJade_Version"
           file dist/ok_school_life-linux-${{ matrix.arch }}-*
 
       - run: python --version
@@ -133,8 +133,8 @@ jobs:
           
           pyinstaller --onefile --add-data "data/events.json:data" --add-data "assets/images:assets/images" src/ok_school_life.py
           
-          version=${GITHUB_REF#refs/tags/v}
-          mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
+          version=${GITHUB_REF#refs/tags/wv}
+          mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version-WaiJade_Version"
           file dist/ok_school_life-macos-${{ matrix.arch }}-*
 
       - run: python --version
@@ -166,12 +166,12 @@ jobs:
           
           # 新版验证逻辑（精确匹配带版本号的文件）
           declare -a required_files=(
-            "ok_school_life-windows-x64-*.exe"
-            "ok_school_life-windows-x86-*.exe"
-            "ok_school_life-linux-x64-*"
-            "ok_school_life-linux-arm64-*"
-            "ok_school_life-macos-x64-*"
-            "ok_school_life-macos-arm64-*"
+            "ok_school_life-windows-x64-*-WaiJade_Version.exe"
+            "ok_school_life-windows-x86-*-WaiJade_Version.exe"
+            "ok_school_life-linux-x64-*-WaiJade_Version"
+            "ok_school_life-linux-arm64-*-WaiJade_Version"
+            "ok_school_life-macos-x64-*-WaiJade_Version"
+            "ok_school_life-macos-arm64-*-WaiJade_Version"
           )
           
           missing_files=0
