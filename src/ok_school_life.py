@@ -15,23 +15,65 @@ import random
 # 图形化界面
 import tkinter as tk
 from tkinter import messagebox
+
+def get_asset_path(*path_parts):
+    """
+    获取 assets 目录下资源的路径。
+    :param path_parts: 资源的子路径部分
+    :return: 完整的资源路径
+    """
+    root_path = get_project_root()
+    return root_path / 'assets' / Path(*path_parts)
 # 系统相关
 import os
 import sys
 from sys import exit
+from pathlib import Path 
 # 引入 json 模块
 import json
 
-# 定义 current_dir 为当前脚本所在目录
-current_dir = os.path.dirname(os.path.abspath(__file__))
-
-def get_resource_path(relative_path):
-    """获取资源文件的绝对路径"""
-    if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
-        base_path = os.path.join(sys._MEIPASS, "data")
+def get_project_root() -> Path:
+    """返回项目根目录的Path对象"""
+    # 方法1：通过__file__定位（适用于直接运行的.py文件）
+    if hasattr(sys, '_MEIPASS'):
+        # 如果是PyInstaller打包后的环境
+        return Path(sys._MEIPASS)
     else:
-        base_path = os.path.join(current_dir, "data")
-    return os.path.join(base_path, relative_path)
+        # 开发环境：向上追溯两级到项目根目录
+        return Path(__file__).parent.parent
+
+def replace_contributors(data, contributors):
+    """
+    递归替换 JSON 数据中的贡献者占位符。
+    :param data: JSON 数据，可以是字典、列表或字符串
+    :param contributors: 贡献者占位符与实际值的映射字典
+    :return: 替换后的数据
+    """
+    if isinstance(data, dict):
+        return {key: replace_contributors(value, contributors) for key, value in data.items()}
+    elif isinstance(data, list):
+        return [replace_contributors(item, contributors) for item in data]
+    elif isinstance(data, str):
+        for placeholder, value in contributors.items():
+            data = data.replace(placeholder, value)
+        return data
+    else:
+        return data
+
+def load_events():
+    """加载并处理 events.json 文件"""
+    try:
+        root_path = get_project_root()
+        events_path = root_path / 'data' / 'events.json'
+        if not events_path.exists():
+            raise FileNotFoundError(f"Events file not found at: {events_path}")
+        with open(events_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        # 替换贡献者占位符
+        return replace_contributors(data, contributors)
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        print(f"加载事件文件失败: {e}")
+        return {}
 
 # 贡献者的变量
 wai = "WaiJade"
@@ -43,43 +85,23 @@ adp_lag = f"(由{lag}亲身经历改编)"
 ctb_zhi = f"(由{zhi}贡献)"
 ctb_sky = f"(由{sky}贡献)"
 
-# 加载 JSON 文件并处理异常
-def load_json_file(relative_path):
-    """加载 JSON 文件并返回解析后的数据"""
-    json_file_path = get_resource_path(relative_path)
-    try:
-        with open(json_file_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        
-        # 替换占位符为贡献者信息，放在引入的函数里，并将变量提前。
-        contributors = {
-            "{ctb_wai}": ctb_wai,
-            "{adp_lag}": adp_lag,
-            "{ctb_zhi}": ctb_zhi,
-            "{ctb_sky}": ctb_sky
-        }
-        
-        def replace_placeholders(obj):
-            if isinstance(obj, str):
-                for placeholder, value in contributors.items():
-                    obj = obj.replace(placeholder, value)
-                return obj
-            elif isinstance(obj, list):
-                return [replace_placeholders(item) for item in obj]
-            elif isinstance(obj, dict):
-                return {key: replace_placeholders(value) for key, value in obj.items()}
-            return obj
-        
-        return replace_placeholders(data)
-    except FileNotFoundError:
-        print(f"错误：未找到文件 {json_file_path}！请确保文件存在。")
-        exit(1)
-    except json.JSONDecodeError:
-        print(f"错误：文件 {json_file_path} 格式无效！请检查 JSON 文件内容。")
-        exit(1)
+contributors = {
+    "{ctb_wai}": ctb_wai,
+    "{adp_lag}": adp_lag,
+    "{ctb_zhi}": ctb_zhi,
+    "{ctb_sky}": ctb_sky
+}
 
-# 加载事件数据
-events_data = load_json_file("../data/events.json")
+# 使用示例
+if __name__ == "__main__":
+    try:
+        events_data = load_events()
+        print("成功加载并处理 events.json")
+        # 输出部分关键字段以便调试
+        print(f"事件列表数量: {len(events_data.get('event_list', []))}")
+        print(f"随机事件数量: {len(events_data.get('random_events', []))}")
+    except Exception as e:
+        print(f"加载失败: {str(e)}")
 
 # 提取事件列表
 event_list = events_data["event_list"]
@@ -88,14 +110,6 @@ event_2_list = events_data["event_2_list"]
 event_3_list = events_data["event_3_list"]
 random_events = events_data["random_events"]
 
-# 使用自定义函数来方便每次调用
-def get_asset_path(*path_segments):
-    """获取资源文件的绝对路径"""
-    if hasattr(sys, '_MEIPASS'):  # PyInstaller 打包后的临时目录
-        base_path = sys._MEIPASS
-    else:
-        base_path = os.path.abspath(os.path.join(current_dir, ".."))
-    return os.path.join(base_path, "assets", *path_segments)
 
 # 初始化主窗口
 root = tk.Tk()

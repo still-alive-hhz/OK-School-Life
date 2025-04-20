@@ -2,3 +2,4 @@ build/
 dist/
 .venv/
 /ok_school_life.spec
+venv/
