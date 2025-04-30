@@ -1,3 +1,4 @@
+
 name: Build and Release Multi-Platform
 
 on:
@@ -44,7 +45,6 @@ jobs:
           $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
           Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
           dir dist
-
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.artifact_suffix }}
@@ -98,7 +98,6 @@ jobs:
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
           file dist/ok_school_life-linux-${{ matrix.arch }}-*
-
       - uses: actions/upload-artifact@v4
         with:
           name: linux-${{ matrix.arch }}
@@ -136,7 +135,6 @@ jobs:
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
           file dist/ok_school_life-macos-${{ matrix.arch }}-*
-
       - uses: actions/upload-artifact@v4
         with:
           name: macos-${{ matrix.arch }}
@@ -187,7 +185,6 @@ jobs:
             exit 1
           fi
           echo "✅ 所有文件验证通过"
-
       - name: Generate changelog
         id: changelog
         run: |
@@ -205,13 +202,11 @@ jobs:
           echo "changelog<<${delimiter}" >> $GITHUB_OUTPUT
           echo "$messages" >> $GITHUB_OUTPUT
           echo "${delimiter}" >> $GITHUB_OUTPUT
-
       - name: Generate build info
         id: build-info
         run: |
           echo "time=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_OUTPUT
           echo "platforms=🐧 Linux (x64/ARM64) | 🍎 macOS (ARM64/x64) | 🪟 Windows (x86/x64)" >> $GITHUB_OUTPUT
-
       - uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
