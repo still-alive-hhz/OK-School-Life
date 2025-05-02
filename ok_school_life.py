@@ -25,6 +25,7 @@ achievements = []  # 存储玩家获得的成就
 used_event_indices = []  # 存储已触发的事件索引
 current_event = None  # 当前事件
 current_choices = {}  # 当前事件的选项
+score = int(0)  # 玩家分数
 
 # 添加全局变量来跟踪当前事件索引
 current_event_1_index = 0
@@ -793,7 +794,7 @@ used_event_indices = []
 
 # 随机事件处理
 def random_event():
-    global last_event
+    global last_event, score
     for widget in root.winfo_children():
         widget.destroy()
 
@@ -808,10 +809,12 @@ def random_event():
         idx = random.randint(0, len(random_events) - 1)
         if idx not in used_event_indices:
             used_event_indices.append(idx)
+            score += 1
             break
 
     event = random_events[idx]
     last_event = event
+
 
     # 显示事件问题
     tk.Label(root, text=event["question"], font=(16), wraplength=500).pack(pady=20)
@@ -852,7 +855,8 @@ def handle_achievements(event, choice):
 def show_achievements():
     for widget in root.winfo_children():
         widget.destroy()
-    tk.Label(root, text="你的成就", font=(20)).pack(pady=20)
+    tk.Label(root, text="游戏记录页", font=(20)).pack(pady=20)
+    tk.Label(root, text=f"你的分数为{score}", font=(14)).pack(pady=5)
     if achievements:
         for achievement in achievements:
             tk.Label(root, text=f"- {achievement}", font=(14)).pack(pady=5)
