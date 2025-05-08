@@ -12,6 +12,11 @@ import random
 import tkinter as tk
 from tkinter import messagebox
 
+'''import yaml
+with open("event_data.yaml", "r", encoding="utf-8") as f:
+    event_data = yaml.safe_load(f)
+'''
+
 # 让版本号作为变量方便调用，而不用手动修改
 version = "v0.3.3"
 
