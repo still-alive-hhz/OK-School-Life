@@ -39,7 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyinstaller
           pip install pyyaml
-          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/ok_school_life.py
+          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/app.py
           
           $version = $env:GITHUB_REF_NAME.Substring(1)
           $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
@@ -82,7 +82,7 @@ jobs:
               export ARCHFLAGS="-arch x86_64"
           fi
           
-          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/ok_school_life.py
+          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/app.py
           
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
@@ -132,7 +132,7 @@ jobs:
               export CXX=aarch64-linux-gnu-g++
           fi
           
-          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/ok_school_life.py
+          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/app.py
           
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
