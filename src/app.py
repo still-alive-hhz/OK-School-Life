@@ -8,12 +8,29 @@ Authors: Still_Alive & WaiJade
 Version: {version}
 Copyright © 2025 Still_Alive & WaiJade
 '''
-import random
+from flask import Flask, jsonify, send_from_directory
+import random, os
 import tkinter as tk
 from tkinter import messagebox
 import yaml
 with open("/Users/houhaozhe/Documents/GitHub/OK-School-Life/data/events.yaml", "r", encoding="utf-8") as f:
     event_data = yaml.safe_load(f)
+
+# 动态获取路径
+base_dir = os.path.dirname(os.path.abspath(__file__))
+yaml_path = os.path.join(base_dir, "../data/events.yaml")
+image_path = os.path.join(base_dir, "../assets/images/welcome_min.png")
+
+# 加载 YAML 文件
+try:
+    with open(yaml_path, "r", encoding="utf-8") as f:
+        event_data = yaml.safe_load(f)
+except FileNotFoundError:
+    print("Error: events.yaml 文件未找到！")
+    event_data = {"random_events": []}
+except yaml.YAMLError as e:
+    print(f"Error: 无法解析 YAML 文件: {e}")
+    event_data = {"random_events": []}
 
 # 读取事件数据
 event_list = event_data["event_list"]
@@ -55,7 +72,6 @@ for event in event_data.get("random_events", []):
     if "question" in event:
         event["question"] = event["question"].format(**contributors)
 
-
 # 显示欢迎界面
 def show_welcome():
     global used_event_indices
@@ -65,7 +81,7 @@ def show_welcome():
     
     # 加载图片
     try:
-        welcome_image = tk.PhotoImage(file="/Users/houhaozhe/Documents/GitHub/OK-School-Life/assets/images/welcome_min.png")
+        welcome_image = tk.PhotoImage(file=image_path)
         tk.Label(root, image=welcome_image).pack(pady=10)
         root.welcome_image = welcome_image  # 防止图片被垃圾回收
     except Exception as e:
