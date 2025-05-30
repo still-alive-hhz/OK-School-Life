@@ -35,17 +35,25 @@ jobs:
           python-version: '3.10'
           architecture: ${{ matrix.python_arch }}
         
-      - run: |
+      - name: Install dependencies
+        run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
-          pip install pyyaml
-          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/ok_school_life.py
-          
+          pip install pyinstaller pyyaml
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
+
+      - name: Build executable
+        run: |
+          pyinstaller --onefile `
+            --add-data "data/events.yaml;data" `
+            --add-data "static;static" `
+            src/ok_school_life.py
+
           $version = $env:GITHUB_REF_NAME.Substring(1)
           $newName = "ok_school_life-${{ matrix.artifact_suffix }}-$version${{ matrix.file_ext }}"
           Rename-Item -Path "dist\ok_school_life.exe" -NewName $newName
           dir dist
         shell: pwsh
+
       - run: python --version
       - run: pip freeze
 
@@ -70,20 +78,25 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: Build executable
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
-          pip install pyyaml
-          
+          pip install pyinstaller pyyaml
+          [ -f requirements.txt ] && pip install -r requirements.txt || true
+
+      - name: Build executable
+        run: |
           if [ "${{ matrix.arch }}" == "arm64" ]; then
               export ARCHFLAGS="-arch arm64"
           else
               export ARCHFLAGS="-arch x86_64"
           fi
-          
-          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/ok_school_life.py
-          
+
+          pyinstaller --onefile \
+            --add-data "data/events.yaml:data" \
+            --add-data "static:static" \
+            src/ok_school_life.py
+
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-macos-${{ matrix.arch }}-$version"
           file dist/ok_school_life-macos-${{ matrix.arch }}-*
@@ -121,19 +134,24 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: Build executable
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller
-          pip install pyyaml
-          
+          pip install pyinstaller pyyaml
+          [ -f requirements.txt ] && pip install -r requirements.txt || true
+
+      - name: Build executable
+        run: |
           if [ "${{ matrix.arch }}" == "arm64" ]; then
               export CC=aarch64-linux-gnu-gcc
               export CXX=aarch64-linux-gnu-g++
           fi
-          
-          pyinstaller --onefile --add-data "data/events.yaml:events.yaml" --add-data "assets/images:assets/images" src/ok_school_life.py
-          
+
+          pyinstaller --onefile \
+            --add-data "data/events.yaml:data" \
+            --add-data "static:static" \
+            src/ok_school_life.py
+
           version=${GITHUB_REF#refs/tags/v}
           mv dist/ok_school_life "dist/ok_school_life-linux-${{ matrix.arch }}-$version"
           file dist/ok_school_life-linux-${{ matrix.arch }}-*
@@ -172,7 +190,6 @@ jobs:
             "ok_school_life-macos-x64-*"
             "ok_school_life-linux-x64-*"
             "ok_school_life-linux-arm64-*"
-           
           )
           
           missing_files=0
@@ -181,7 +198,7 @@ jobs:
             if [ ${#matches[@]} -eq 0 ] || [ ! -e "${matches[0]}" ]; then
               echo "❌ 文件匹配失败: $pattern"
               missing_files=1
-            else:
+            else
               echo "✅ 文件存在: ${matches[0]}"
               file "${matches[0]}"
             fi
