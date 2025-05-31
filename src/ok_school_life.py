@@ -22,29 +22,30 @@ base_dir = os.path.dirname(os.path.abspath(__file__))
 if getattr(sys, 'frozen', False):
     # 打包后
     base_dir = sys._MEIPASS
+    yaml_path = os.path.join(base_dir, "data/events.yaml")
 else:
     # 源码运行
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-
-yaml_path = os.path.join(base_dir, "data/events.yaml")
+    # 以 src/ok_school_life.py 为基准，向上一级找 data/events.yaml
+    yaml_path = os.path.join(os.path.dirname(__file__), "../data/events.yaml")
+    yaml_path = os.path.abspath(yaml_path)
 
 # 加载 YAML 文件
 try:
     with open(yaml_path, "r", encoding="utf-8") as f:
         event_data = yaml.safe_load(f)
 except FileNotFoundError:
-    print("Error: events.yaml 文件未找到！")
-    event_data = {"random_events": []}
+    print(f"Error: events.yaml 文件未找到！尝试路径：{yaml_path}")
+    event_data = {}
 except yaml.YAMLError as e:
     print(f"Error: 无法解析 YAML 文件: {e}")
-    event_data = {"random_events": []}
+    event_data = {}
 
-# 读取事件数据
-event_list = event_data["event_list"]
-event_1_list = event_data["event_1_list"]
-event_2_list = event_data["event_2_list"]
-event_3_list = event_data["event_3_list"]
-random_events = event_data["random_events"]
+# 读取事件数据，若缺失则给默认空列表
+event_list = event_data.get("event_list", [])
+event_1_list = event_data.get("event_1_list", [])
+event_2_list = event_data.get("event_2_list", [])
+event_3_list = event_data.get("event_3_list", [])
+random_events = event_data.get("random_events", [])
 
 # 让版本号作为变量方便调用，而不用手动修改
 version = "v0.4.0"
