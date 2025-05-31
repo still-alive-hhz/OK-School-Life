@@ -3,7 +3,7 @@
 import webview
 from flask import Flask, jsonify, request, render_template
 from pathlib import Path
-import random, os, yaml
+import random, os, yaml, sys
 
 # 初始化Flask应用
 app = Flask(
@@ -18,7 +18,15 @@ with open(Path(__file__).parent.parent / 'data' / 'events.yaml', encoding='utf-8
 
 # 动态获取路径
 base_dir = os.path.dirname(os.path.abspath(__file__))
-yaml_path = os.path.join(base_dir, "../data/events.yaml")
+
+if getattr(sys, 'frozen', False):
+    # 打包后
+    base_dir = sys._MEIPASS
+else:
+    # 源码运行
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+
+yaml_path = os.path.join(base_dir, "data/events.yaml")
 
 # 加载 YAML 文件
 try:
