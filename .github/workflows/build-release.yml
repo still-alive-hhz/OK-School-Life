@@ -46,6 +46,7 @@ jobs:
           pyinstaller --onefile `
             --add-data "data/events.yaml;data" `
             --add-data "static;static" `
+            --hidden-import pywebview `
             src/ok_school_life.py
 
           $version = $env:GITHUB_REF_NAME.Substring(1)
@@ -95,6 +96,7 @@ jobs:
           pyinstaller --onefile \
             --add-data "data/events.yaml:data" \
             --add-data "static:static" \
+            --hidden-import pywebview \
             src/ok_school_life.py
 
           version=${GITHUB_REF#refs/tags/v}
@@ -150,6 +152,7 @@ jobs:
           pyinstaller --onefile \
             --add-data "data/events.yaml:data" \
             --add-data "static:static" \
+            --hidden-import pywebview \
             src/ok_school_life.py
 
           version=${GITHUB_REF#refs/tags/v}
