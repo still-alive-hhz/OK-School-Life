@@ -222,19 +222,25 @@
                     optionsDiv.appendChild(button);
                 }
                 // 累积显示成就
-                if (data.achievements && data.achievements.length > 0) {
+                if (data.achievements) {
                     const achievementsDiv = document.getElementById('achievements');
                     const listDiv = document.getElementById('achievements-list');
                     // 把新成就加入全局Set
-                    data.achievements.forEach(achievement => allAchievements.add(achievement));
-                    // 清空再渲染所有成就
-                    listDiv.innerHTML = '';
-                    Array.from(allAchievements).reverse().forEach(achievement => {
-                        const p = document.createElement('p');
-                        p.textContent = achievement;
-                        listDiv.appendChild(p);
+                    let hasNew = false;
+                    data.achievements.forEach(achievement => {
+                        if (!allAchievements.has(achievement)) hasNew = true;
+                        allAchievements.add(achievement);
                     });
-                    achievementsDiv.style.display = 'block';
+                    // 只要有成就就渲染
+                    if (allAchievements.size > 0) {
+                        listDiv.innerHTML = '';
+                        Array.from(allAchievements).reverse().forEach(achievement => {
+                            const p = document.createElement('p');
+                            p.textContent = achievement;
+                            listDiv.appendChild(p);
+                        });
+                        achievementsDiv.style.display = 'block';
+                    }
                 }
 
                 // 控制封面图片显示
@@ -303,7 +309,7 @@
 Version 0.4
 At home, May 30, 2025
 
-Hi, I'm Stiil Alive, in Chinese“还活着”, the developer of this game.
+Hi, I'm Stiil Alive, in Chinese “还活着”, the developer of this game.
 
 First of all, thank you for playing this game.
 This is a simple text-based game where you can choose your school life path.
