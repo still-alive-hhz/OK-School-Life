@@ -1,6 +1,6 @@
 import webview
 from flask import Flask, jsonify, request, render_template
-import random, os, json, sys
+import random, os, json, sys, threading, webbrowser
 
 # 初始化Flask应用
 app = Flask(
@@ -312,10 +312,12 @@ def run_flask():
     app.run(debug=False, port=5001)
 
 if __name__ == '__main__':
-    import threading
     t = threading.Thread(target=run_flask)
     t.daemon = True
     t.start()
+    # 打开默认浏览器访问本地页面
+    webbrowser.open("http://localhost:5001")
+    # 如果你还需要 webview 窗口，也可以保留
     window = webview.create_window(
         title=f"OK School Life {version}",
         url="http://localhost:5001",
