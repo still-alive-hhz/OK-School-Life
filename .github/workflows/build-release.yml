@@ -46,7 +46,7 @@ jobs:
           pyinstaller --onefile `
             --add-data "data/events.json;data" `
             --add-data "static;static" `
-            --add-data "templates;templates" `
+            --add-data "templates/index.html;templates" `
             --hidden-import pywebview `
             src/ok_school_life.py
 
@@ -97,7 +97,7 @@ jobs:
           pyinstaller --onefile \
             --add-data "data/events.json:data" \
             --add-data "static:static" \
-            --add-data "templates:templates" \
+            --add-data "templates/index.html:templates" \
             --hidden-import pywebview \
             src/ok_school_life.py
 
@@ -154,7 +154,7 @@ jobs:
           pyinstaller --onefile \
             --add-data "data/events.json:data" \
             --add-data "static:static" \
-            --add-data "templates:templates" \
+            --add-data "templates/index.html:templates" \
             --hidden-import pywebview \
             src/ok_school_life.py
 
