@@ -34,7 +34,7 @@
           },
           "end_game_choices": ["3"],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         },
         {
           "id": "event_1_2",
@@ -51,7 +51,7 @@
           },
           "end_game_choices": [],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         },
         {
           "id": "event_1_3",
@@ -68,7 +68,7 @@
           },
           "end_game_choices": ["1"],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         }
       ],
       "group_2": [
@@ -87,7 +87,7 @@
           },
           "end_game_choices": ["1"],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         },
         {
           "id": "event_2_2",
@@ -104,7 +104,7 @@
           },
           "end_game_choices": [],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         },
         {
           "id": "event_2_3",
@@ -121,7 +121,7 @@
           },
           "end_game_choices": ["3"],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         }
       ],
       "group_3": [
@@ -140,7 +140,7 @@
           },
           "end_game_choices": ["1"],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         },
         {
           "id": "event_3_2",
@@ -157,7 +157,7 @@
           },
           "end_game_choices": ["3"],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         },
         {
           "id": "event_3_3",
@@ -174,7 +174,7 @@
           },
           "end_game_choices": [],
           "achievements": {},
-          "contributors": ["ctb_sa"]
+          "contributors": ["StillAlive"]
         }
       ]
     },
@@ -194,7 +194,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_2",
@@ -211,7 +211,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_3",
@@ -228,7 +228,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_4",
@@ -245,7 +245,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_5",
@@ -262,7 +262,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_6",
@@ -279,7 +279,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_7",
@@ -296,7 +296,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_8",
@@ -313,7 +313,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_9",
@@ -332,7 +332,7 @@
         "achievements": {
           "3": "视力5.0"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_10",
@@ -349,7 +349,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_11",
@@ -366,7 +366,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_12",
@@ -383,7 +383,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_13",
@@ -400,7 +400,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_14",
@@ -419,7 +419,7 @@
         "achievements": {
           "1": "原神启动"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_15",
@@ -438,7 +438,7 @@
         "achievements": {
           "3": "一心学习"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_16",
@@ -457,7 +457,7 @@
         "achievements": {
           "2": "理科发型"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_17",
@@ -474,7 +474,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_18",
@@ -491,7 +491,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_19",
@@ -508,7 +508,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_20",
@@ -525,7 +525,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_21",
@@ -544,7 +544,7 @@
         "achievements": {
           "3": "成长"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_22",
@@ -561,7 +561,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_23",
@@ -578,7 +578,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_24",
@@ -595,7 +595,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_25",
@@ -614,7 +614,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_wai"]
+        "contributors": ["WaiJade"]
       },
       {
         "id": "random_26",
@@ -635,7 +635,7 @@
         "achievements": {
           "1": "西格玛人"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_27",
@@ -652,7 +652,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_28",
@@ -669,7 +669,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_29",
@@ -688,7 +688,7 @@
         "achievements": {
           "1": "开发者の认可"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_30",
@@ -705,7 +705,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_31",
@@ -732,7 +732,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_32",
@@ -751,7 +751,7 @@
         "achievements": {
           "2": "正义插队者"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_33",
@@ -770,7 +770,7 @@
         "achievements": {
           "2": "成都boy！"
         },
-        "contributors": ["adp_lag"]
+        "contributors": ["lagency"]
       },
       {
         "id": "random_34",
@@ -789,7 +789,7 @@
         "achievements": {
           "1": "不屈的金枪客"
         },
-        "contributors": ["ctb_zhi"]
+        "contributors": ["智心逍遥"]
       },
       {
         "id": "random_35",
@@ -809,7 +809,7 @@
           "1": "孤勇者",
           "3": "神里绫华の狗"
         },
-        "contributors": ["adp_lag"]
+        "contributors": ["lagency"]
       },
       {
         "id": "random_36",
@@ -831,7 +831,7 @@
           "1": "窝囊组加分",
           "3": "哎！"
         },
-        "contributors": ["ctb_sky"]
+        "contributors": ["sky"]
       },
       {
         "id": "random_37",
@@ -864,7 +864,7 @@
         "achievements": {
           "1": "过目不忘"
         },
-        "contributors": ["ctb_zhi"]
+        "contributors": ["智心逍遥"]
       },
       {
         "id": "random_38",
@@ -883,7 +883,7 @@
         "achievements": {
           "2": "不哑巴英语"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_39",
@@ -900,7 +900,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_40",
@@ -919,7 +919,7 @@
         "achievements": {
           "1": "丞相：有容乃大"
         },
-        "contributors": ["ctb_zhi"]
+        "contributors": ["智心逍遥"]
       },
       {
         "id": "random_41",
@@ -936,7 +936,7 @@
         "achievements": {
           "1": "开发者の感谢"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_42",
@@ -975,7 +975,7 @@
           "8": "网瘾",
           "9": "homesick"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_43",
@@ -995,7 +995,7 @@
           "1": "忍者神龟",
           "2": "乐子人"
         },
-        "contributors": ["ctb_wai"]
+        "contributors": ["WaiJade"]
       },
       {
         "id": "random_44",
@@ -1014,7 +1014,7 @@
         "achievements": {
           "2": "满满的细节"
         },
-        "contributors": ["ctb_sa"]
+        "contributors": ["StillAlive"]
       },
       {
         "id": "random_45",
@@ -1033,7 +1033,7 @@
         "achievements": {
           "1": "内个"
         },
-        "contributors": ["ctb_tmt"]
+        "contributors": ["Tomato"]
       },
       {
         "id": "random_46",
@@ -1051,7 +1051,7 @@
         "achievements": {
           "3": "《绿皮书》忠实粉丝"
         },
-        "contributors": ["ctb_tmt"],
+        "contributors": ["Tomato"],
         "end_game_choices": ["1"]
       },
       {
@@ -1071,7 +1071,7 @@
         "achievements": {
           "2": "孤胆英雄"
         },
-        "contributors": ["ctb_tmt"]
+        "contributors": ["Tomato"]
       },
       {
         "id": "random_48",
@@ -1100,7 +1100,7 @@
           "1": "校园流言中的“有个人”",
           "2": "华生"
         },
-        "contributors": ["ctb_wai"]
+        "contributors": ["WaiJade"]
       },
       {
         "id": "random_49",
@@ -1116,7 +1116,7 @@
           "3": "正↗确↗！（毛毛音）"
         },
         "end_game_choices": [],
-        "contributors": ["ctb_yax"]
+        "contributors": ["YaXuan"]
       },
       {
         "id": "random_50",
@@ -1134,7 +1134,7 @@
           "4": "这个选项纯粹是二进制随机排列，和开发者无关。"
         },
         "end_game_choices": [],
-        "contributors": ["ctb_yax"]
+        "contributors": ["YaXuan"]
       },
       {
         "id": "random_51",
@@ -1152,7 +1152,7 @@
           "4": "你周末玩的很不爽。心情不好。"
         },
         "end_game_choices": [],
-        "contributors": ["ctb_wai"]
+        "contributors": ["WaiJade"]
       },
       {
         "id": "random_52",
@@ -1167,7 +1167,7 @@
           "2": "你三天没下过课，",
           "3": "毛毛一言不发只是一味地画图然后让你出答案，你有点恼火，但还能接受。并且你学会了“错↗↘了↗→（毛毛音）”"
         },
-        "contributors": ["ctb_wai", "ctb_guo"]
+        "contributors": ["WaiJade", "GuoHao"]
       },
       {
         "id": "random_53",
@@ -1188,7 +1188,7 @@
         "achievements": {
           "4": "卷↗↘狗↗"
         },
-        "contributors": ["ctb_tmt"]
+        "contributors": ["Tomato"]
       }
     ]
   }
