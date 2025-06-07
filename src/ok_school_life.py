@@ -2,11 +2,22 @@ import webview
 from flask import Flask, jsonify, request, render_template, send_from_directory
 import random, os, json, sys, threading, webbrowser
 
+if getattr(sys, 'frozen', False):
+    # PyInstaller环境
+    base_dir = sys._MEIPASS
+    template_folder = os.path.join(base_dir, 'assets', 'templates')
+    static_folder = os.path.join(base_dir, 'assets', 'static')
+else:
+    # 普通环境
+    base_dir = os.path.dirname(__file__)
+    template_folder = os.path.abspath(os.path.join(base_dir, '../assets/templates'))
+    static_folder = os.path.abspath(os.path.join(base_dir, '../assets/static'))
+
 # 初始化Flask应用
 app = Flask(
     __name__,
-    template_folder=os.path.join(os.path.dirname(__file__), '../assets/templates'),
-    static_folder=os.path.join(os.path.dirname(__file__), '../static')
+    template_folder=template_folder,
+    static_folder=static_folder
 )
 
 # 动态获取路径
