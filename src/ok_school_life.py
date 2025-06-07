@@ -1,20 +1,31 @@
 import webview
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_file
 import random, os, json, sys, threading, webbrowser
+
+if getattr(sys, 'frozen', False):
+    # PyInstaller环境
+    base_dir = sys._MEIPASS
+    template_folder = os.path.join(base_dir, 'assets', 'templates')
+    static_folder = os.path.join(base_dir, 'assets', 'static')
+else:
+    # 普通环境
+    base_dir = os.path.dirname(__file__)
+    template_folder = os.path.abspath(os.path.join(base_dir, '../assets/templates'))
+    static_folder = os.path.abspath(os.path.join(base_dir, '../assets/static'))
 
 # 初始化Flask应用
 app = Flask(
     __name__,
-    template_folder=os.path.join(os.path.dirname(__file__), '../templates'),
-    static_folder=os.path.join(os.path.dirname(__file__), '../static')
+    template_folder=template_folder
+    # 不要设置 static_folder
 )
 
 # 动态获取路径
 if getattr(sys, 'frozen', False):
     base_dir = sys._MEIPASS
-    json_path = os.path.join(base_dir, "data/events.json")
+    json_path = os.path.join(base_dir, "assets/data/events.json")
 else:
-    json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../data/events.json"))
+    json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../assets/data/events.json"))
 
 # 加载 JSON 文件
 try:
@@ -27,11 +38,28 @@ except json.JSONDecodeError as e:
     print(f"Error: 无法解析 JSON 文件: {e}")
     event_data = {}
 
-event_list = event_data.get("event_list", [])
-event_1_list = event_data.get("event_1_list", [])
-event_2_list = event_data.get("event_2_list", [])
-event_3_list = event_data.get("event_3_list", [])
-random_events = event_data.get("random_events", [])
+# 兼容新旧结构
+def get_event_list():
+    # 只取 metadata.start_options
+    meta = event_data.get("metadata", {})
+    return meta.get("start_options", [])
+
+def get_group_events(group_key):
+    # 只取 events.fixed_events.group_x
+    events = event_data.get("events", {})
+    fixed = events.get("fixed_events", {})
+    return fixed.get(group_key, [])
+
+def get_random_events():
+    # 只取 events.random_events
+    events = event_data.get("events", {})
+    return events.get("random_events", [])
+
+event_list = get_event_list()
+event_1_list = get_group_events("group_1")
+event_2_list = get_group_events("group_2")
+event_3_list = get_group_events("group_3")
+random_events = get_random_events()
 
 # 让版本号作为变量方便调用，而不用手动修改
 version = "v0.4.0"
@@ -307,6 +335,21 @@ def api_clear_data():
     global score
     score = 0
     return jsonify({'message': '数据已清除！'})
+
+@app.route('/assets/images/<path:filename>')
+def custom_static_images(filename):
+    if getattr(sys, 'frozen', False):
+        assets_dir = os.path.join(sys._MEIPASS, 'assets', 'images')
+    else:
+        assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../assets/images'))
+    # 兼容分隔符
+    safe_filename = filename.replace('/', os.sep).replace('\\', os.sep)
+    full_path = os.path.join(assets_dir, safe_filename)
+    print("Trying to serve image:", full_path)
+    if not os.path.isfile(full_path):
+        print("File not found:", full_path)
+        return "Not Found", 404
+    return send_file(full_path)
 
 def run_flask():
     app.run(debug=False, port=5001)
