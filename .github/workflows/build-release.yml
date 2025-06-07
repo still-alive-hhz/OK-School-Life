@@ -93,9 +93,7 @@ jobs:
           fi
 
           pyinstaller --onefile \
-            --add-data "assets/data/events.json:data" \
-            --add-data "static:static" \
-            --add-data "templates/index.html:templates" \
+            --add-data "assets:assets" \
             --hidden-import pywebview \
             src/ok_school_life.py
 
