@@ -16,8 +16,8 @@ else:
 # 初始化Flask应用
 app = Flask(
     __name__,
-    template_folder=template_folder,
-    static_folder=static_folder
+    template_folder=template_folder
+    # 不要设置 static_folder
 )
 
 # 动态获取路径
