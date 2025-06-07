@@ -1,7 +1,7 @@
 {
   "metadata": {
     "contributors": {
-      "ctb_HHZ": "StillAlive",
+      "ctb_sa": "StillAlive",
       "ctb_wai": "WaiJade",
       "adp_lag": "lagency",
       "ctb_zhi": "智心逍遥",
@@ -34,7 +34,7 @@
           },
           "end_game_choices": ["3"],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         },
         {
           "id": "event_1_2",
@@ -51,7 +51,7 @@
           },
           "end_game_choices": [],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         },
         {
           "id": "event_1_3",
@@ -68,7 +68,7 @@
           },
           "end_game_choices": ["1"],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         }
       ],
       "group_2": [
@@ -87,7 +87,7 @@
           },
           "end_game_choices": ["1"],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         },
         {
           "id": "event_2_2",
@@ -104,7 +104,7 @@
           },
           "end_game_choices": [],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         },
         {
           "id": "event_2_3",
@@ -121,7 +121,7 @@
           },
           "end_game_choices": ["3"],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         }
       ],
       "group_3": [
@@ -140,7 +140,7 @@
           },
           "end_game_choices": ["1"],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         },
         {
           "id": "event_3_2",
@@ -157,7 +157,7 @@
           },
           "end_game_choices": ["3"],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         },
         {
           "id": "event_3_3",
@@ -174,7 +174,7 @@
           },
           "end_game_choices": [],
           "achievements": {},
-          "contributors": ["ctb_SA"]
+          "contributors": ["ctb_sa"]
         }
       ]
     },
@@ -194,7 +194,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_2",
@@ -211,7 +211,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_3",
@@ -228,7 +228,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_4",
@@ -245,7 +245,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_5",
@@ -262,7 +262,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_6",
@@ -279,7 +279,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_7",
@@ -296,7 +296,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_8",
@@ -313,7 +313,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_9",
@@ -332,7 +332,7 @@
         "achievements": {
           "3": "视力5.0"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_10",
@@ -349,7 +349,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_11",
@@ -366,7 +366,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_12",
@@ -383,7 +383,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_13",
@@ -400,7 +400,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_14",
@@ -419,7 +419,7 @@
         "achievements": {
           "1": "原神启动"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_15",
@@ -438,7 +438,7 @@
         "achievements": {
           "3": "一心学习"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_16",
@@ -457,7 +457,7 @@
         "achievements": {
           "2": "理科发型"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_17",
@@ -474,7 +474,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_18",
@@ -491,7 +491,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_19",
@@ -508,7 +508,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_20",
@@ -525,7 +525,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_21",
@@ -544,7 +544,7 @@
         "achievements": {
           "3": "成长"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_22",
@@ -561,7 +561,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_23",
@@ -578,7 +578,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_24",
@@ -595,7 +595,7 @@
         },
         "end_game_choices": ["3"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_25",
@@ -635,7 +635,7 @@
         "achievements": {
           "1": "西格玛人"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_27",
@@ -652,7 +652,7 @@
         },
         "end_game_choices": ["2"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_28",
@@ -669,7 +669,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_29",
@@ -688,7 +688,7 @@
         "achievements": {
           "1": "开发者の认可"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_30",
@@ -705,7 +705,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_31",
@@ -732,7 +732,7 @@
         },
         "end_game_choices": [],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_32",
@@ -751,7 +751,7 @@
         "achievements": {
           "2": "正义插队者"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_33",
@@ -883,7 +883,7 @@
         "achievements": {
           "2": "不哑巴英语"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_39",
@@ -900,7 +900,7 @@
         },
         "end_game_choices": ["1"],
         "achievements": {},
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_40",
@@ -936,7 +936,7 @@
         "achievements": {
           "1": "开发者の感谢"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_42",
@@ -975,7 +975,7 @@
           "8": "网瘾",
           "9": "homesick"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_43",
@@ -1014,7 +1014,7 @@
         "achievements": {
           "2": "满满的细节"
         },
-        "contributors": ["ctb_SA"]
+        "contributors": ["ctb_sa"]
       },
       {
         "id": "random_45",
@@ -1153,6 +1153,21 @@
         },
         "end_game_choices": [],
         "contributors": ["ctb_wai"]
+      },
+      {
+        "id": "random_52",
+        "question": "你的化学老师请假了，你希望哪个老师来：",
+        "choices": {
+          "1": "MC",
+          "2": "陈晓俊",
+          "3": "毛毛"
+        },
+        "results": {
+          "1": "你喜欢这个男人的化学课，你决得这才是教师，并向他看齐。",
+          "2": "你三天没下过课，",
+          "3": "毛毛一言不发只是一味地画图然后让你出答案，你有点恼火，但还能接受。并且你学会了“错↗↘了↗→（毛毛音）”"
+        },
+        "contributors": ["ctb_wai", "ctb_guo"]
       },
       {
         "id": "random_53",
