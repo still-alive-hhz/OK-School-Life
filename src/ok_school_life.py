@@ -339,11 +339,14 @@ def api_clear_data():
 @app.route('/assets/images/<path:filename>')
 def custom_static_images(filename):
     if getattr(sys, 'frozen', False):
-        # PyInstaller环境
         assets_dir = os.path.join(sys._MEIPASS, 'assets', 'images')
     else:
         assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../assets/images'))
-    return send_from_directory(assets_dir, filename)
+    # 兼容分隔符
+    safe_filename = filename.replace('/', os.sep).replace('\\', os.sep)
+    full_path = os.path.join(assets_dir, safe_filename)
+    print("Trying to serve image:", full_path)
+    return send_from_directory(assets_dir, safe_filename)
 
 def run_flask():
     app.run(debug=False, port=5001)
