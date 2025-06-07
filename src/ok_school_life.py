@@ -91,7 +91,7 @@ def pick_result(result_value):
     返回：(文本, 是否gameover)
     """
     if isinstance(result_value, list):
-        probs = [item.get("prob", 1/len(result_value)) for item in result_value]
+        probs = [item.get("prob") or item.get("prob", 1/len(result_value)) for item in result_value]
         chosen = random.choices(result_value, weights=probs, k=1)[0]
         text = chosen.get("rd_result") or chosen.get("text") or ""
         end_game = chosen.get("end_game", False)
