@@ -1,5 +1,5 @@
 import webview
-from flask import Flask, jsonify, request, render_template, send_from_directory
+from flask import Flask, jsonify, request, render_template, send_file
 import random, os, json, sys, threading, webbrowser
 
 if getattr(sys, 'frozen', False):
@@ -346,7 +346,10 @@ def custom_static_images(filename):
     safe_filename = filename.replace('/', os.sep).replace('\\', os.sep)
     full_path = os.path.join(assets_dir, safe_filename)
     print("Trying to serve image:", full_path)
-    return send_from_directory(assets_dir, safe_filename)
+    if not os.path.isfile(full_path):
+        print("File not found:", full_path)
+        return "Not Found", 404
+    return send_file(full_path)
 
 def run_flask():
     app.run(debug=False, port=5001)
