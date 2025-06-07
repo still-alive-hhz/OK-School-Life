@@ -19,15 +19,53 @@
 ## 🚀 快速开始
 
 如果你有python环境，使用git来下载此仓库
-
+### 1.下载仓库
 ```bash
-# 需要Python 3.x
 git clone https://github.com/still-alive-hhz/OK-School-Life.git
 cd ok-school-life
 python ok-school-life.py
 ```
-
-[直接下载游戏脚本](https://github.com/ff9d0362-7cad-4f06-8527-6efaf9ea21f5)然后在控制台运行
+### 2.安装依赖
+#### a.使用虚拟环境
+```bash
+python3 -m venv venv
+```
+```bash
+source venv/bin/activate
+```
+#### b.下载依赖
+```bash
+pip install pywebview
+```
+```bash
+pip install pywebview
+```
+```bash
+pip install flask
+```
+#### c.使用QT依赖和Python扩展
+```bash
+sudo apt update
+sudo apt install python3-pyqt5
+pip install qtpy PyQt5
+```
+#### c.或者使用GTK
+```bash
+sudo apt install python3-gi gir1.2-webkit2-4.0
+pip install PyGObject
+```
+#### d.PyQt5 及其 WebEngine 支持
+```bash
+pip install PyQt5 PyQtWebEngine
+```
+若执行d后报错,`“没有 gi”`,则使用退回c步骤下载GTK,但是Linux系统源中有可能找不到gir1.2-webkit2-4.0包，原因是Linux 发行版较新或源未启用 universe/multiverse。解决办法
+#### “没有 gi”的解决办法
+##### 方法一 使用 PyQt5 作为 webview 后端
+```bash
+pip install PyQt5 PyQtWebEngine
+```
+##### 方法二 如果必须用GTK则安装旧版的
+可以尝试添加旧源或用 snap/flatpak 安装 webkit2gtk，但操作较复杂，不推荐。
 
 ## 🎯 游戏玩法
 

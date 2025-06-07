@@ -44,7 +44,7 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --onefile `
-            --add-data "data/events.json;data" `
+            --add-data "assets/data/events.json;data" `
             --add-data "static;static" `
             --add-data "templates/index.html;templates" `
             --hidden-import pywebview `
@@ -95,7 +95,7 @@ jobs:
           fi
 
           pyinstaller --onefile \
-            --add-data "data/events.json:data" \
+            --add-data "assets/data/events.json:data" \
             --add-data "static:static" \
             --add-data "templates/index.html:templates" \
             --hidden-import pywebview \
@@ -152,7 +152,7 @@ jobs:
           fi
 
           pyinstaller --onefile \
-            --add-data "data/events.json:data" \
+            --add-data "assets/data/events.json:data" \
             --add-data "static:static" \
             --add-data "templates/index.html:templates" \
             --hidden-import pywebview \
