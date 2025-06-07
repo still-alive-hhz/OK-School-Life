@@ -338,8 +338,11 @@ def api_clear_data():
 
 @app.route('/assets/images/<path:filename>')
 def custom_static_images(filename):
-    # 指向 assets/images 目录
-    assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../assets/images'))
+    if getattr(sys, 'frozen', False):
+        # PyInstaller环境
+        assets_dir = os.path.join(sys._MEIPASS, 'assets', 'images')
+    else:
+        assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../assets/images'))
     return send_from_directory(assets_dir, filename)
 
 def run_flask():
