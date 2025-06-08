@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>OK School Life</title>
     <link rel="apple-touch-icon" sizes="57x57" href="assets/images/icons/standard/apple-icon-57x57.png">
@@ -11,7 +12,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="assets/images/icons/standard/apple-icon-144x144.png">
     <link rel="apple-touch-icon" sizes="152x152" href="assets/images/icons/standard/apple-icon-152x152.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/images/icons/standard/apple-icon-180x180.png">
-    <link rel="icon" type="image/png" sizes="192x192"  href="assets/images/icons/standard/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/images/icons/standard/android-icon-192x192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="assets/images/icons/standard/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="96x96" href="assets/images/icons/standard/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/images/icons/standard/favicon-16x16.png">
@@ -22,121 +23,151 @@
 
     <style>
         body {
-    font-family: Arial, sans-serif;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f5f5f5;
-}
-.game-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-.message {
-    margin-bottom: 20px;
-    padding: 15px;
-    background-color: #f0f8ff;
-    border-radius: 5px;
-}
-.options {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-.options-row {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    justify-content: space-between;
-    width: 100%;
-    flex-wrap: wrap; /* 允许在极窄时自动换行 */
-}
-button, .half-btn, .start-btn {
-    padding: 10px 24px;
-    background: #1976d2;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-    cursor: pointer;
-    transition: background 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
-    outline: none;
-    white-space: nowrap; /* 防止按钮文字换行 */
-}
-button:hover, .half-btn:hover, .start-btn:hover {
-    background: #1565c0;
-}
-button:active, .half-btn:active, .start-btn:active {
-    background: #0d47a1;
-}
-.achievements {
-    margin-top: 20px;
-    padding: 10px;
-    background-color: #fffacd;
-    border-radius: 5px;
-    max-height: 180px;      /* 限制最大高度 */
-    overflow-y: auto;       /* 超出时可滚动 */
-}
-#achievements-list p {
-    margin: 0 0 6px 0;
-    font-size: 15px;
-}
-#about {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 12px;
-    color: #333;
-}
-.main-btns {
-    width: fit-content;
-    margin: 0 auto;
-    min-width: 320px;
-    max-width: 100%;
-}
-#options {
-    width: 100%;
-}
-.start-btn {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-    display: block;
-    margin: 20px 0 0 0;
-    box-sizing: border-box;
-    font-size: 15px;
-    padding: 10px 20px;
-    white-space: nowrap;
-}
-.half-btn {
-    flex: 1 1 0;
-    min-width: 100px;      /* 适当设置最小宽度，防止太窄 */
-    max-width: 220px;      /* 最大宽度，防止太宽 */
-    padding: 10px 20px;
-    font-size: 15px;
-    box-sizing: border-box;
-    white-space: nowrap;
-}
-.main-title {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-.subtitle {
-    font-size: 18px;
-    color: #71B988;
-    font-weight: normal;
-}
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .game-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .options-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: space-between;
+            width: 100%;
+            flex-wrap: wrap;
+            /* 允许在极窄时自动换行 */
+        }
+
+        button,
+        .half-btn,
+        .start-btn {
+            padding: 10px 24px;
+            background: #1976d2;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+            outline: none;
+            white-space: nowrap;
+            /* 防止按钮文字换行 */
+        }
+
+        button:hover,
+        .half-btn:hover,
+        .start-btn:hover {
+            background: #1565c0;
+        }
+
+        button:active,
+        .half-btn:active,
+        .start-btn:active {
+            background: #0d47a1;
+        }
+
+        .achievements {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #fffacd;
+            border-radius: 5px;
+            max-height: 180px;
+            /* 限制最大高度 */
+            overflow-y: auto;
+            /* 超出时可滚动 */
+        }
+
+        #achievements-list p {
+            margin: 0 0 6px 0;
+            font-size: 15px;
+        }
+
+        #about {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .main-btns {
+            width: fit-content;
+            margin: 0 auto;
+            min-width: 320px;
+            max-width: 100%;
+        }
+
+        #options {
+            width: 100%;
+        }
+
+        .start-btn {
+            width: 100%;
+            min-width: 0;
+            max-width: 100%;
+            display: block;
+            margin: 20px 0 0 0;
+            box-sizing: border-box;
+            font-size: 15px;
+            padding: 10px 20px;
+            white-space: nowrap;
+        }
+
+        .half-btn {
+            flex: 1 1 0;
+            min-width: 100px;
+            /* 适当设置最小宽度，防止太窄 */
+            max-width: 220px;
+            /* 最大宽度，防止太宽 */
+            padding: 10px 20px;
+            font-size: 15px;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        .main-title {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #71B988;
+            font-weight: normal;
+        }
     </style>
+
 <body>
     <div class="game-container">
-        <h1 class = "main-title"> 
+        <h1 class="main-title">
             OK School Life
-            <span class = "subtitle">Monet</span>
+            <span class="subtitle">Monet</span>
         </h1>
-        <img id="cover-img" src="/assets/images/welcome/welcome-v4.png" alt="主页图片" style="width:100%;max-width:600px;display:block;margin:0 auto 20px auto;border-radius:12px;">
+        <img id="cover-img" src="/assets/images/welcome/welcome-v4.png" alt="主页图片"
+            style="width:100%;max-width:600px;display:block;margin:0 auto 20px auto;border-radius:12px;">
         <div id="result" class="message" style="background-color:#e6ffe6;"></div>
         <div id="message" class="message"></div>
         <div id="about" class="message" style="display:none; white-space:pre-line;"></div>
@@ -158,31 +189,9 @@ button:active, .half-btn:active, .start-btn:active {
 
         function updateUI(data) {
             let questionText = data.message || '';
-            let resultText = '';
-            let nextQuestion = '';
-
-            // 判断是否有下一个问题
-            if (questionText.includes('\n')) {
-                // 找到第一个换行，把前面所有内容都当作结果，后面是下一个问题
-                const idx = questionText.indexOf('\n');
-                resultText = questionText.slice(0, idx).trim();
-                nextQuestion = questionText.slice(idx + 1).trim();
-                // 如果 nextQuestion 还有内容且下一行不是问题，则把所有多余行都归到 resultText
-                if (nextQuestion && !nextQuestion.startsWith('>>>')) {
-                    // 继续往下找下一个换行
-                    const idx2 = nextQuestion.indexOf('\n');
-                    if (idx2 !== -1) {
-                        resultText += '\n' + nextQuestion.slice(0, idx2).trim();
-                        nextQuestion = nextQuestion.slice(idx2 + 1).trim();
-                    } else {
-                        resultText += '\n' + nextQuestion;
-                        nextQuestion = '';
-                    }
-                }
-            } else {
-                resultText = questionText;
-                nextQuestion = '';
-            }
+            let lines = questionText.split('\n');
+            let resultText = lines[0] ? lines[0].trim() : '';
+            let nextQuestion = lines.slice(1).join('\n').trim();
 
             // 只在有新结果时更新 lastResult
             if (resultText) lastResult = resultText;
@@ -204,7 +213,7 @@ button:active, .half-btn:active, .start-btn:active {
                         optionObj.text === '查看成就' ||
                         optionObj.text === '清除数据'
                     ) {
-                        bottomBtns.push({option: optionObj.text, key: optionObj.key});
+                        bottomBtns.push({ option: optionObj.text, key: optionObj.key });
                     } else {
                         const button = document.createElement('button');
                         button.textContent = optionObj.text;
@@ -216,7 +225,7 @@ button:active, .half-btn:active, .start-btn:active {
                     }
                 });
                 // 渲染底部横排按钮
-                bottomBtns.forEach(({option, key}) => {
+                bottomBtns.forEach(({ option, key }) => {
                     const button = document.createElement('button');
                     button.textContent = option;
                     button.className = 'half-btn';
@@ -269,7 +278,7 @@ button:active, .half-btn:active, .start-btn:active {
             }
         }
 
-        function makeChoice(choice, start_event=null) {
+        function makeChoice(choice, start_event = null) {
             let body = {};
             if (currentApi === '/api/choose_school') {
                 body = { school: choice, start_event: start_event };
@@ -284,15 +293,15 @@ button:active, .half-btn:active, .start-btn:active {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
             })
-            .then(response => response.json())
-            .then (data => {
-                updateUI(data);
-                if (data.next_event === 'school_event') currentApi = '/api/school_event';
-                else if (data.next_event === 'random_event') currentApi = '/api/random_event';
-                else if (data.next_event === 'choose_school') currentApi = '/api/choose_school';
-                else if (data.game_over) currentApi = '/api/choose_start';
-            })
-            .catch(error => console.error('Error:', error));
+                .then(response => response.json())
+                .then(data => {
+                    updateUI(data);
+                    if (data.next_event === 'school_event') currentApi = '/api/school_event';
+                    else if (data.next_event === 'random_event') currentApi = '/api/random_event';
+                    else if (data.next_event === 'choose_school') currentApi = '/api/choose_school';
+                    else if (data.game_over) currentApi = '/api/choose_start';
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         function showAchievements() {
@@ -312,7 +321,7 @@ button:active, .half-btn:active, .start-btn:active {
         function confirmClearData() {
             // 弹出确认页面
             if (confirm("确定要清除所有成就和分数吗？")) {
-                fetch('/api/clear_data', {method: 'POST'})
+                fetch('/api/clear_data', { method: 'POST' })
                     .then(response => response.json())
                     .then(data => {
                         alert(data.message);
@@ -376,11 +385,12 @@ Enjoy the game!</pre>
         }
 
         // 关键：页面加载时自动请求
-        window.onload = function() {
+        window.onload = function () {
             fetch('/api/start_game')
                 .then(response => response.json())
                 .then(data => updateUI(data));
         };
     </script>
 </body>
+
 </html>
