@@ -44,6 +44,7 @@ jobs:
       - name: Build executable
         run: |
           pyinstaller --onefile `
+            --icon "assets/images/icons/app/icon-win.ico" `
             --add-data "assets;assets" `
             --hidden-import pywebview `
             src/ok_school_life.py
@@ -93,6 +94,7 @@ jobs:
           fi
 
           pyinstaller --onefile \
+            --icon "assets/images/icons/app/icon-mac.icns" \
             --add-data "assets:assets" \
             --hidden-import pywebview \
             src/ok_school_life.py
