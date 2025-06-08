@@ -182,7 +182,6 @@
     </div>
     <script>
         let currentApi = '/api/choose_start';
-        let lastResult = "";
 
         // 全局保存已显示的成就
         let allAchievements = new Set();
@@ -190,13 +189,19 @@
         function updateUI(data) {
             let questionText = data.message || '';
             let lines = questionText.split('\n');
-            let resultText = lines[0] ? lines[0].trim() : '';
-            let nextQuestion = lines.slice(1).join('\n').trim();
+            let resultText = '';
+            let nextQuestion = '';
 
-            // 只在有新结果时更新 lastResult
-            if (resultText) lastResult = resultText;
+            // 只要第一行不是以 >>> 开头，就认为是结果
+            if (lines.length > 1 && !lines[0].trim().startsWith('>>>')) {
+                resultText = lines[0].trim();
+                nextQuestion = lines.slice(1).join('\n').trim();
+            } else {
+                resultText = '';
+                nextQuestion = questionText.trim();
+            }
 
-            document.getElementById('result').textContent = lastResult;
+            document.getElementById('result').textContent = resultText;
             document.getElementById('message').textContent = nextQuestion;
 
             const optionsDiv = document.getElementById('options');

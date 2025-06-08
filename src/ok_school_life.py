@@ -214,8 +214,12 @@ def api_school_event():
 
     # 概率死亡 或 固定死亡
     if is_end or str(choice) in end_game_choices:
+        if result:
+            message = result + "\n你失败了，游戏结束！"
+        else:
+            message = "你失败了，游戏结束！"
         return jsonify({
-            'message': result + "\n你失败了，游戏结束！",
+            'message': message,
             'game_over': True,
             'achievements': triggered_achievements
         })
@@ -231,8 +235,12 @@ def api_school_event():
         else:
             next_msg = next_event
             next_options = []
+        if result:
+            message = result + "\n" + next_msg
+        else:
+            message = next_msg
         return jsonify({
-            'message': result + "\n" + next_msg,
+            'message': message,
             'options': next_options,
             'next_event': 'school_event',
             'achievements': triggered_achievements
@@ -240,9 +248,15 @@ def api_school_event():
     else:
         user_state["stage"] = "random"
         unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
+        # 关键：只在这里保存 result
+        user_state["last_result"] = result
         if not unused:
+            if result:
+                message = result + "\n所有事件已完成，游戏结束！"
+            else:
+                message = "所有事件已完成，游戏结束！"
             return jsonify({
-                'message': result + "\n所有事件已完成，游戏结束！",
+                'message': message,
                 'achievements': triggered_achievements,
                 'game_over': True
             })
@@ -251,8 +265,12 @@ def api_school_event():
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
+        if result:
+            message = result + "\n" + msg
+        else:
+            message = msg
         return jsonify({
-            'message': result + "\n" + msg,
+            'message': message,
             'options': options,
             'next_event': 'random_event',
             'achievements': triggered_achievements
@@ -271,8 +289,14 @@ def api_random_event():
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
+        # 关键：拼接上一个阶段的结果
+        last_result = user_state.pop("last_result", "")
+        if last_result:
+            message = last_result + "\n" + msg
+        else:
+            message = msg
         return jsonify({
-            'message': msg,
+            'message': message,
             'options': options,
             'next_event': 'random_event'
         })
@@ -296,8 +320,12 @@ def api_random_event():
                 achievements.append(ach)
     if is_end or str(choice) in end_game_choices:
         user_state["random_used"].add(idx)
+        if result:
+            message = result + "\n游戏结束！"
+        else:
+            message = "游戏结束！"
         return jsonify({
-            'message': result + "\n游戏结束！",
+            'message': message,
             'game_over': True,
             'achievements': triggered_achievements
         })
@@ -305,8 +333,12 @@ def api_random_event():
     score += 1
     unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
     if not unused:
+        if result:
+            message = result + "\n所有事件已完成，游戏结束！"
+        else:
+            message = "所有事件已完成，游戏结束！"
         return jsonify({
-            'message': result + "\n所有事件已完成，游戏结束！",
+            'message': message,
             'achievements': triggered_achievements,
             'game_over': True
         })
@@ -315,8 +347,12 @@ def api_random_event():
     next_event = random_events[next_idx]
     msg = next_event['question'] + get_contributor_str(next_event)
     options = [{'key': k, 'text': v} for k, v in next_event['choices'].items()]
+    if result:
+        message = result + "\n" + msg
+    else:
+        message = msg
     return jsonify({
-        'message': result + "\n" + msg,
+        'message': message,
         'options': options,
         'next_event': 'random_event',
         'achievements': triggered_achievements
