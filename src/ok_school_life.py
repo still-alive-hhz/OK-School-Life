@@ -215,7 +215,8 @@ def api_school_event():
     # 概率死亡 或 固定死亡
     if is_end or str(choice) in end_game_choices:
         return jsonify({
-            'message': result + "\n你失败了，游戏结束！",
+            'result': result,  # 或者空字符串
+            'message': "你失败了，游戏结束！",
             'game_over': True,
             'achievements': triggered_achievements
         })
@@ -232,7 +233,8 @@ def api_school_event():
             next_msg = next_event
             next_options = []
         return jsonify({
-            'message': result + "\n" + next_msg,
+            'result': result,  # 新增：只放上一个结果
+            'message': next_msg,  # 新问题
             'options': next_options,
             'next_event': 'school_event',
             'achievements': triggered_achievements
@@ -242,9 +244,11 @@ def api_school_event():
         unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
         if not unused:
             return jsonify({
-                'message': result + "\n所有事件已完成，游戏结束！",
+                'result': result,
+                'message': "所有事件已完成，游戏结束！",
                 'achievements': triggered_achievements,
-                'game_over': True
+                'game_over': True,
+                'options': []
             })
         idx = random.choice(unused)
         user_state["random_used"].add(idx)
@@ -252,7 +256,8 @@ def api_school_event():
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
         return jsonify({
-            'message': result + "\n" + msg,
+            'result': result,  # 只放上一个结果
+            'message': msg,    # 新问题
             'options': options,
             'next_event': 'random_event',
             'achievements': triggered_achievements
@@ -265,13 +270,19 @@ def api_random_event():
     if choice is None or user_state.get("last_random_idx") is None:
         unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
         if not unused:
-            return jsonify({'message': '所有事件已完成，游戏结束！', 'game_over': True})
+            return jsonify({
+                'result': "",
+                'message': "所有事件已完成，游戏结束！",
+                'game_over': True,
+                'options': []
+            })
         idx = random.choice(unused)
         user_state["last_random_idx"] = idx
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
         return jsonify({
+            'result': "",
             'message': msg,
             'options': options,
             'next_event': 'random_event'
@@ -297,9 +308,11 @@ def api_random_event():
     if is_end or str(choice) in end_game_choices:
         user_state["random_used"].add(idx)
         return jsonify({
-            'message': result + "\n游戏结束！",
+            'result': result,
+            'message': "游戏结束！",
             'game_over': True,
-            'achievements': triggered_achievements
+            'achievements': triggered_achievements,
+            'options': []  # 明确返回空选项，防止前端渲染出错
         })
     user_state["random_used"].add(idx)
     score += 1
@@ -316,7 +329,8 @@ def api_random_event():
     msg = next_event['question'] + get_contributor_str(next_event)
     options = [{'key': k, 'text': v} for k, v in next_event['choices'].items()]
     return jsonify({
-        'message': result + "\n" + msg,
+        'result': result,  # 新增：只放上一个结果
+        'message': msg,    # 新问题
         'options': options,
         'next_event': 'random_event',
         'achievements': triggered_achievements
