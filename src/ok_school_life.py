@@ -360,14 +360,5 @@ if __name__ == '__main__':
     t.start()
     # 打开默认浏览器访问本地页面
     webbrowser.open("http://localhost:5001")
-    # 如果你还需要 webview 窗口，也可以保留
-    window = webview.create_window(
-        title=f"OK School Life {version}",
-        url="http://localhost:5001",
-        width=800,
-        height=600,
-        resizable=True
-    )
-    webview.start()
 
-# 2025.6.5 00:30, UTC+08:00
+# 2025.6.8 03:05, UTC+08:00
