@@ -3,31 +3,25 @@ from flask import Flask, jsonify, request, render_template, send_file
 import random, os, json, sys, threading, webbrowser
 
 if getattr(sys, 'frozen', False):
-    # PyInstaller环境
     base_dir = sys._MEIPASS
     template_folder = os.path.join(base_dir, 'assets', 'templates')
     static_folder = os.path.join(base_dir, 'assets', 'static')
 else:
-    # 普通环境
     base_dir = os.path.dirname(__file__)
     template_folder = os.path.abspath(os.path.join(base_dir, '../assets/templates'))
     static_folder = os.path.abspath(os.path.join(base_dir, '../assets/static'))
 
-# 初始化Flask应用
 app = Flask(
     __name__,
     template_folder=template_folder
-    # 不要设置 static_folder
 )
 
-# 动态获取路径
 if getattr(sys, 'frozen', False):
     base_dir = sys._MEIPASS
     json_path = os.path.join(base_dir, "assets/data/events.json")
 else:
     json_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../assets/data/events.json"))
 
-# 加载 JSON 文件
 try:
     with open(json_path, "r", encoding="utf-8") as f:
         event_data = json.load(f)
@@ -38,20 +32,16 @@ except json.JSONDecodeError as e:
     print(f"Error: 无法解析 JSON 文件: {e}")
     event_data = {}
 
-# 兼容新旧结构
 def get_event_list():
-    # 只取 metadata.start_options
     meta = event_data.get("metadata", {})
     return meta.get("start_options", [])
 
 def get_group_events(group_key):
-    # 只取 events.fixed_events.group_x
     events = event_data.get("events", {})
     fixed = events.get("fixed_events", {})
     return fixed.get(group_key, [])
 
 def get_random_events():
-    # 只取 events.random_events
     events = event_data.get("events", {})
     return events.get("random_events", [])
 
@@ -61,7 +51,6 @@ event_2_list = get_group_events("group_2")
 event_3_list = get_group_events("group_3")
 random_events = get_random_events()
 
-# 让版本号作为变量方便调用，而不用手动修改
 version = "v0.4.0"
 
 user_state = {
@@ -83,23 +72,15 @@ def get_contributor_str(event):
     return ""
 
 def pick_result(result_value):
-    """
-    支持三种格式：
-    1. 字符串：直接返回
-    2. 概率数组：如 [{"rd_result": "...", "prob": 0.6}, ...]
-    3. 兼容老格式 [{"text": "...", "prob": 0.5}]
-    返回：(文本, 是否gameover)
-    """
     if isinstance(result_value, list):
         probs = [item.get("prob") or item.get("prob", 1/len(result_value)) for item in result_value]
         chosen = random.choices(result_value, weights=probs, k=1)[0]
-        text = chosen.get("rd_result") or chosen.get("text") or ""
+        text = chosen.get("rd_result") or chosen.get("text") or "你做出了选择。"
         end_game = chosen.get("end_game", False)
         return text, end_game
     else:
-        return result_value, False
+        return result_value if result_value and result_value.strip() else "你做出了选择。", False
 
-# 创建 Flask API 路由
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -162,7 +143,6 @@ def api_choose_school():
     else:
         return jsonify({'message': '未知学校', 'game_over': True})
 
-    # 如果是字符串，直接返回；如果是对象，拼接贡献者
     if isinstance(event, dict):
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
@@ -199,29 +179,22 @@ def api_school_event():
         achievements_dict = event.get('achievements', {})
         end_game_choices = event.get('end_game_choices', [])
     else:
-        result, is_end = "", False
+        result, is_end = pick_result("")
         msg = event
         options = []
         achievements_dict = {}
         end_game_choices = []
 
-    triggered_achievements = []
     for k, ach in achievements_dict.items():
-        if str(choice) == k:
-            triggered_achievements.append(ach)
-            if ach not in achievements:
-                achievements.append(ach)
+        if str(choice) == k and ach not in achievements:
+            achievements.append(ach)
 
-    # 概率死亡 或 固定死亡
     if is_end or str(choice) in end_game_choices:
-        if result:
-            message = result + "\n你失败了，游戏结束！"
-        else:
-            message = "你失败了，游戏结束！"
+        message = result + "你失败了，游戏结束！"
         return jsonify({
             'message': message,
             'game_over': True,
-            'achievements': triggered_achievements
+            'achievements': achievements
         })
 
     user_state["event_idx"] += 1
@@ -235,29 +208,22 @@ def api_school_event():
         else:
             next_msg = next_event
             next_options = []
-        if result:
-            message = result + "\n" + next_msg
-        else:
-            message = next_msg
+        # school_event 普通切换
+        message = result + "\n" + next_msg
         return jsonify({
             'message': message,
             'options': next_options,
             'next_event': 'school_event',
-            'achievements': triggered_achievements
+            'achievements': achievements
         })
     else:
         user_state["stage"] = "random"
         unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
-        # 关键：只在这里保存 result
-        user_state["last_result"] = result
         if not unused:
-            if result:
-                message = result + "\n所有事件已完成，游戏结束！"
-            else:
-                message = "所有事件已完成，游戏结束！"
+            message = result + "\n所有事件已完成，游戏结束！"
             return jsonify({
                 'message': message,
-                'achievements': triggered_achievements,
+                'achievements': achievements,
                 'game_over': True
             })
         idx = random.choice(unused)
@@ -265,15 +231,14 @@ def api_school_event():
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
-        if result:
-            message = result + "\n" + msg
-        else:
-            message = msg
+        # school_event 切换到 random_event
+        user_state["last_result"] = result
+        message = msg
         return jsonify({
             'message': message,
             'options': options,
             'next_event': 'random_event',
-            'achievements': triggered_achievements
+            'achievements': achievements
         })
 
 @app.route('/api/random_event', methods=['POST'])
@@ -289,12 +254,9 @@ def api_random_event():
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
-        # 关键：拼接上一个阶段的结果
+        # random_event 首次进入
         last_result = user_state.pop("last_result", "")
-        if last_result:
-            message = last_result + "\n" + msg
-        else:
-            message = msg
+        message = last_result + "\n" + msg
         return jsonify({
             'message': message,
             'options': options,
@@ -310,36 +272,27 @@ def api_random_event():
         user_state["last_random_idx"] = idx
     event = random_events[idx]
     result, is_end = pick_result(event['results'][str(choice)])
-    end_game_choices = event.get('end_game_choices', [])
+    end_game_choices = event.get('end_game_choices', {})
     achievements_dict = event.get('achievements', {})
-    triggered_achievements = []
     for k, ach in achievements_dict.items():
-        if str(choice) == k:
-            triggered_achievements.append(ach)
-            if ach not in achievements:
-                achievements.append(ach)
+        if str(choice) == k and ach not in achievements:
+            achievements.append(ach)
     if is_end or str(choice) in end_game_choices:
         user_state["random_used"].add(idx)
-        if result:
-            message = result + "\n游戏结束！"
-        else:
-            message = "游戏结束！"
+        message = result + "\n游戏结束！"
         return jsonify({
             'message': message,
             'game_over': True,
-            'achievements': triggered_achievements
+            'achievements': achievements
         })
     user_state["random_used"].add(idx)
     score += 1
     unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
     if not unused:
-        if result:
-            message = result + "\n所有事件已完成，游戏结束！"
-        else:
-            message = "所有事件已完成，游戏结束！"
+        message = result + "\n所有事件已完成，游戏结束！"
         return jsonify({
             'message': message,
-            'achievements': triggered_achievements,
+            'achievements': achievements,
             'game_over': True
         })
     next_idx = random.choice(unused)
@@ -347,15 +300,13 @@ def api_random_event():
     next_event = random_events[next_idx]
     msg = next_event['question'] + get_contributor_str(next_event)
     options = [{'key': k, 'text': v} for k, v in next_event['choices'].items()]
-    if result:
-        message = result + "\n" + msg
-    else:
-        message = msg
+    # random_event 普通切换
+    message = result + "\n" + msg
     return jsonify({
         'message': message,
         'options': options,
         'next_event': 'random_event',
-        'achievements': triggered_achievements
+        'achievements': achievements
     })
 
 @app.route('/api/get_achievements', methods=['GET'])
@@ -378,7 +329,6 @@ def custom_static_images(filename):
         assets_dir = os.path.join(sys._MEIPASS, 'assets', 'images')
     else:
         assets_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../assets/images'))
-    # 兼容分隔符
     safe_filename = filename.replace('/', os.sep).replace('\\', os.sep)
     full_path = os.path.join(assets_dir, safe_filename)
     print("Trying to serve image:", full_path)
@@ -390,13 +340,11 @@ def custom_static_images(filename):
 def run_flask():
     app.run(debug=False, port=5001)
 
-
 if __name__ == '__main__':
     t = threading.Thread(target=run_flask)
     t.daemon = True
     t.start()
     webbrowser.open("http://localhost:5001")
-    # 如果你还需要 webview 窗口，也可以保留Add commentMore actions
     window = webview.create_window(
         title=f"OK School Life {version}",
         url="http://localhost:5001",
