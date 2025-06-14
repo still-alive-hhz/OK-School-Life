@@ -196,7 +196,7 @@ def api_school_event():
             'achievements': achievements
         })
 
-    print(f"Current event index: {user_state["event_idx"]}, Total events: {len(event_list_now)}")
+    print(f"Current event index: {user_state['event_idx']}, Total events: {len(event_list_now)}")
     if user_state["event_idx"] + 1 < len(event_list_now):
         user_state["event_idx"] += 1
         score += 1
@@ -312,6 +312,7 @@ def api_random_event():
         'next_event': 'random_event',
         'achievements': achievements
     })
+
 
 @app.route('/api/get_achievements', methods=['GET'])
 def api_get_achievements():
