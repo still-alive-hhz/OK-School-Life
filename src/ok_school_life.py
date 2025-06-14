@@ -38,12 +38,10 @@ def get_event_list():
 
 def get_group_events(group_key):
     events = event_data.get("events", {})
-    fixed = events.get("fixed_events", {})
-    return fixed.get(group_key, [])
+    return events.get(group_key, [])
 
 def get_random_events():
-    events = event_data.get("events", {})
-    return events.get("random_events", [])
+    return event_data.get("random_events", [])
 
 event_list = get_event_list()
 event_1_list = get_group_events("group_1")
@@ -55,9 +53,10 @@ version = "v0.4.0"
 
 user_state = {
     "school": None,
-    "event_idx": 0,
+    "fixed_event_idx": 0,
+    "random_used": set(),
     "stage": "fixed",
-    "random_used": set()
+    
 }
 
 achievements = []
@@ -197,10 +196,11 @@ def api_school_event():
             'achievements': achievements
         })
 
-    user_state["event_idx"] += 1
-    score += 1
-
-    if user_state["event_idx"] < len(event_list_now):
+    print(f"Current event index: {user_state["event_idx"]}, Total events: {len(event_list_now)}")
+    if user_state["event_idx"] + 1 < len(event_list_now):
+        user_state["event_idx"] += 1
+        score += 1
+        print(f"Moving to next fixed event at index: {user_state['event_idx']}")
         next_event = event_list_now[user_state["event_idx"]]
         if isinstance(next_event, dict):
             next_msg = next_event['question'] + get_contributor_str(next_event)
@@ -217,8 +217,12 @@ def api_school_event():
             'achievements': achievements
         })
     else:
+        print(f"Last fixed event result: {result}")
         user_state["stage"] = "random"
+        # 完全清除固定事件相关状态
+        user_state.pop("last_fixed_result", None)
         unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
+        print(f"Switching to random events, unused indices: {unused}")
         if not unused:
             message = result + "\n所有事件已完成，游戏结束！"
             return jsonify({
@@ -228,11 +232,11 @@ def api_school_event():
             })
         idx = random.choice(unused)
         user_state["random_used"].add(idx)
+        user_state["last_random_idx"] = idx  # 立即设置随机事件索引
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
-        # school_event 切换到 random_event
-        user_state["last_result"] = result
+        # 全新开始显示随机事件，不携带任何固定事件结果
         message = msg
         return jsonify({
             'message': message,
@@ -244,7 +248,8 @@ def api_school_event():
 @app.route('/api/random_event', methods=['POST'])
 def api_random_event():
     global score
-    choice = request.json.get('choice')
+    choice = request.json.get("choice")
+
     if choice is None or user_state.get("last_random_idx") is None:
         unused = [i for i in range(len(random_events)) if i not in user_state["random_used"]]
         if not unused:
@@ -254,9 +259,8 @@ def api_random_event():
         event = random_events[idx]
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
-        # random_event 首次进入
-        last_result = user_state.pop("last_result", "")
-        message = last_result + "\n" + msg
+        # 直接显示新事件内容，不拼接之前的结果
+        message = msg
         return jsonify({
             'message': message,
             'options': options,
@@ -272,8 +276,8 @@ def api_random_event():
         user_state["last_random_idx"] = idx
     event = random_events[idx]
     result, is_end = pick_result(event['results'][str(choice)])
-    end_game_choices = event.get('end_game_choices', {})
-    achievements_dict = event.get('achievements', {})
+    end_game_choices = event.get('end_game_choices', [])
+    achievements_dict = event.get("achievements", {})
     for k, ach in achievements_dict.items():
         if str(choice) == k and ach not in achievements:
             achievements.append(ach)
@@ -300,7 +304,7 @@ def api_random_event():
     next_event = random_events[next_idx]
     msg = next_event['question'] + get_contributor_str(next_event)
     options = [{'key': k, 'text': v} for k, v in next_event['choices'].items()]
-    # random_event 普通切换
+    # 直接拼接结果和新事件消息
     message = result + "\n" + msg
     return jsonify({
         'message': message,

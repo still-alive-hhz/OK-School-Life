@@ -295,18 +295,22 @@
                     body = { choice: choice };
                 }
 
-                fetch(currentApi, {
+                // 确保API调用顺序正确
+                const targetApi = currentApi;
+                fetch(targetApi, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(body)
                 })
                 .then(response => response.json())
-                .then (data => {
+                .then(data => {
                     updateUI(data);
-                    if (data.next_event === 'school_event') currentApi = '/api/school_event';
-                    else if (data.next_event === 'random_event') currentApi = '/api/random_event';
-                    else if (data.next_event === 'choose_school') currentApi = '/api/choose_school';
-                    else if (data.game_over) currentApi = '/api/choose_start';
+                    // 仅在成功响应后更新currentApi
+                    if (data.next_event) {
+                        currentApi = `/api/${data.next_event}`;
+                    } else if (data.game_over) {
+                        currentApi = '/api/choose_start';
+                    }
                 })
                 .catch(error => console.error('Error:', error));
             }
