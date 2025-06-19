@@ -38,9 +38,6 @@ source venv/bin/activate
 pip install pywebview
 ```
 ```bash
-pip install pywebview
-```
-```bash
 pip install flask
 ```
 #### c.使用QT依赖和Python扩展
@@ -112,7 +109,7 @@ pip install PyQt5 PyQtWebEngine
 * [x] 图形化界面
 * [ ] 增添更多内容（包括数值系统，特殊事件库等）
 * [ ] 先实现界面美化，再实现web游玩此python
-* [ ] 对exe进行标准化设置图标等
+* [x] 对exe进行标准化设置图标等
 * [x] 大更代码，让事件与脚本分离
 * [ ] 加入劳大复活系统，用2D动作小游戏的方式复活
 * [ ] 对GUI进行优化，如具体样式修改和相对值大小
