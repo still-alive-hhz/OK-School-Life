@@ -1477,7 +1477,7 @@
         "1": "安全意识Good"
       },
       "contributors": [
-        "WaiJade","C'est bon"
+        "WaiJade", "C'est bon"
       ]
     },
     {
@@ -1509,14 +1509,14 @@
             "prob": 0.3
           }
         ],
-        "3": "赌狗没有未来，你的物理炸了，物理老师夸你是“优秀的男人”。。"
+        "3": "赌狗没有未来，你的物理炸了，物理老师夸你是“优秀的男人”。"
       },
       "end_game_choices": [],
       "achievements": {
-        "3": ["赌狗","优秀的男人"]
+        "3": ["赌狗", "优秀的男人"]
       },
       "contributors": [
-        "WaiJade","YeKiQue"
+        "WaiJade", "YeKiQue"
       ]
     },
     {
@@ -1535,10 +1535,10 @@
         "4": "教室里充满了快活的气氛，但老师让你闭嘴，你很不解。"
       },
       "end_game_choices": [
-        "1","2"
+        "1", "2"
       ],
       "contributors": [
-        "WaiJade","SmallBook"
+        "WaiJade", "SmallBook"
       ]
     }
   ]
