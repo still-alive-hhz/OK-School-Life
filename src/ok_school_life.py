@@ -237,7 +237,7 @@ def api_school_event():
         msg = event['question'] + get_contributor_str(event)
         options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
         # 全新开始显示随机事件，不携带任何固定事件结果
-        message = msg
+        message = result + "\n" + msg  # 修改这里，添加最后一个固定事件的结果
         return jsonify({
             'message': message,
             'options': options,
