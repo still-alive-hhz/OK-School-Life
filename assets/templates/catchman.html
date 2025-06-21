@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch Man - 随机迷宫</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+      margin: 0;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    #game-container {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    canvas {
+      background: #eee;
+      display: block;
+      margin: 10px auto;
+      max-width: 100%;
+      touch-action: none;
+    }
+
+    .controls {
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    .show-dpad-btn {
+      padding: 9px 18px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    #dpad-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 0 auto;
+    }
+
+    .dpad-lg {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      background: #555;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-weight: bold;
+      user-select: none;
+      font-size: 28px;
+    }
+
+    .dpad-lg:active {
+      background: #333;
+    }
+
+    #up {
+      top: 0;
+      left: 60px;
+    }
+
+    #left {
+      top: 60px;
+      left: 0;
+    }
+
+    #down {
+      top: 120px;
+      left: 60px;
+    }
+
+    #right {
+      top: 60px;
+      left: 120px;
+    }
+
+    #status {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    @media (max-width: 400px) {
+      .dpad {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+      }
+
+      .controls {
+        width: 108px;
+        height: 108px;
+      }
+
+      #up {
+        left: 36px;
+      }
+
+      #left {
+        top: 36px;
+      }
+
+      #down {
+        top: 72px;
+        left: 36px;
+      }
+
+      #right {
+        top: 36px;
+        left: 72px;
+      }
+
+      #center {
+        top: 36px;
+        left: 36px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game-container">
+    <h2>Catch Man</h2>
+    <p>方向键控制学生移动，10秒内不被老师抓到就获胜！移动以开始游戏。</p>
+    <div id="status"></div>
+    <div id="result-panel" style="display:none;">
+      <div id="result-msg"></div>
+      <button id="result-btn"></button>
+    </div>
+    <canvas id="game"></canvas>
+    <div class="controls">
+      <button id="show-dpad-btn" class="show-dpad-btn">显示方向键</button>
+      <div id="dpad-container" style="display:none;">
+        <div class="dpad-lg" id="up">↑</div>
+        <div class="dpad-lg" id="left">←</div>
+        <div class="dpad-lg" id="down">↓</div>
+        <div class="dpad-lg" id="right">→</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 根据屏幕大小调整画布尺寸
+    function resizeCanvas() {
+      const canvas = document.getElementById('game');
+      const container = document.getElementById('game-container');
+      const size = Math.min(container.clientWidth - 40, 350);
+      canvas.width = size;
+      canvas.height = size;
+      return size;
+    }
+
+    // 随机迷宫生成（递归回溯法）
+    function generateMaze(rows, cols) {
+      if (rows % 2 === 0) rows++;
+      if (cols % 2 === 0) cols++;
+      let maze = Array.from({ length: rows }, () => Array(cols).fill(1));
+      function carve(x, y) {
+        maze[y][x] = 0;
+        const dirs = [
+          [0, -2], [0, 2], [-2, 0], [2, 0]
+        ].sort(() => Math.random() - 0.5);
+        for (const [dx, dy] of dirs) {
+          let nx = x + dx, ny = y + dy;
+          if (ny > 0 && ny < rows && nx > 0 && nx < cols && maze[ny][nx] === 1) {
+            maze[y + dy / 2][x + dx / 2] = 0;
+            carve(nx, ny);
+          }
+        }
+      }
+      carve(1, 1);
+
+      // 随机打通部分墙，增加环路
+      for (let y = 1; y < rows - 1; y++) {
+        for (let x = 1; x < cols - 1; x++) {
+          if (maze[y][x] === 1 && Math.random() < 0.10) { // 10%概率打通
+            // 只打通横或竖相邻都是路的墙
+            if ((maze[y - 1][x] === 0 && maze[y + 1][x] === 0) ||
+              (maze[y][x - 1] === 0 && maze[y][x + 1] === 0)) {
+              maze[y][x] = 0;
+            }
+          }
+        }
+      }
+      return maze;
+    }
+
+    const rows = 11, cols = 11;
+    const maze = generateMaze(rows, cols);
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const canvasSize = resizeCanvas();
+    let cellSize = canvasSize / rows;
+
+    // 角色初始位置
+    let student = { x: 1, y: 1 };
+    let teacher = { x: cols - 2, y: rows - 2 };
+    let gameOver = false;
+    let win = false;
+    let started = false;
+    let startTime = 0;
+    const gameTime = 10; // 秒
+    document.getElementById('status').textContent = `剩余时间：${gameTime} 秒`;
+
+    // 窗口大小改变时重新调整画布
+    window.addEventListener('resize', () => {
+      const newSize = resizeCanvas();
+      cellSize = newSize / rows;
+      draw();
+    });
+
+    // 方向键控制
+    document.addEventListener('keydown', e => {
+      if (gameOver) return;
+      let dx = 0, dy = 0;
+      if (e.key === 'ArrowUp') dy = -1;
+      if (e.key === 'ArrowDown') dy = 1;
+      if (e.key === 'ArrowLeft') dx = -1;
+      if (e.key === 'ArrowRight') dx = 1;
+      moveStudent(dx, dy);
+    });
+
+    // 按钮控制
+    // 显示方向键按钮
+    document.getElementById('show-dpad-btn').addEventListener('click', function () {
+      this.style.display = 'none';
+      document.getElementById('dpad-container').style.display = 'block';
+    });
+
+    // 方向键控制
+    document.getElementById('up').addEventListener('touchstart', (e) => { e.preventDefault(); moveStudent(0, -1); });
+    document.getElementById('left').addEventListener('touchstart', (e) => { e.preventDefault(); moveStudent(-1, 0); });
+    document.getElementById('down').addEventListener('touchstart', (e) => { e.preventDefault(); moveStudent(0, 1); });
+    document.getElementById('right').addEventListener('touchstart', (e) => { e.preventDefault(); moveStudent(1, 0); });
+
+    document.getElementById('up').addEventListener('mousedown', () => moveStudent(0, -1));
+    document.getElementById('left').addEventListener('mousedown', () => moveStudent(-1, 0));
+    document.getElementById('down').addEventListener('mousedown', () => moveStudent(0, 1));
+    document.getElementById('right').addEventListener('mousedown', () => moveStudent(1, 0));
+
+    function moveStudent(dx, dy) {
+      if (gameOver) return;
+      let nx = student.x + dx, ny = student.y + dy;
+      if (maze[ny] && maze[ny][nx] === 0) {
+        if (!started) {
+          started = true;
+          startTime = Date.now();
+          startTimer();
+        }
+        student.x = nx; student.y = ny;
+        draw();
+        // 检查是否被抓
+        if (student.x === teacher.x && student.y === teacher.y) {
+          gameOver = true;
+          showResult(false); // 一定要调用showResult(false)
+          return;
+        }
+      }
+    }
+
+    // 老师AI：简单追踪学生
+    function moveTeacher() {
+      // BFS寻路
+      let queue = [{ x: teacher.x, y: teacher.y, path: [] }];
+      let visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+      visited[teacher.y][teacher.x] = true;
+      let found = null;
+      const dirs = [
+        [0, 1], [1, 0], [0, -1], [-1, 0]
+      ];
+      while (queue.length) {
+        let { x, y, path } = queue.shift();
+        if (x === student.x && y === student.y) {
+          found = path;
+          break;
+        }
+        for (let [dx, dy] of dirs) {
+          let nx = x + dx, ny = y + dy;
+          if (maze[ny] && maze[ny][nx] === 0 && !visited[ny][nx]) {
+            visited[ny][nx] = true;
+            queue.push({ x: nx, y: ny, path: path.concat([[nx, ny]]) });
+          }
+        }
+      }
+      // 如果找到了路径，老师走下一步
+      if (found && found.length > 0) {
+        teacher.x = found[0][0];
+        teacher.y = found[0][1];
+      }
+    }
+
+    function startTimer() {
+      function loop() {
+        if (gameOver) return;
+        let now = Date.now();
+        let left = gameTime - Math.floor((now - startTime) / 1000);
+        document.getElementById('status').textContent = `剩余时间：${left} 秒`;
+        if (started) {
+          moveTeacher();
+          draw();
+        }
+        // 检查是否被抓
+        if (student.x === teacher.x && student.y === teacher.y) {
+          gameOver = true;
+          showResult(false);
+          return;
+        }
+        if (left <= 0) {
+          gameOver = true;
+          showResult(true);
+          return;
+        }
+        setTimeout(loop, 200);
+      }
+      loop();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // 画迷宫
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          if (maze[y][x] === 1) {
+            ctx.fillStyle = '#202020'; // 接近黑色
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+      // 画学生
+      ctx.fillStyle = 'blue';
+      ctx.beginPath();
+      ctx.arc(student.x * cellSize + cellSize / 2, student.y * cellSize + cellSize / 2, cellSize / 2 - 2, 0, Math.PI * 2);
+      ctx.fill();
+      // 画老师
+      ctx.fillStyle = 'red';
+      ctx.beginPath();
+      ctx.arc(teacher.x * cellSize + cellSize / 2, teacher.y * cellSize + cellSize / 2, cellSize / 2 - 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    draw();
+
+    // 新的showResult实现
+    function showResult(win) {
+        const panel = document.getElementById('result-panel');
+        const msg = document.getElementById('result-msg');
+        const btn = document.getElementById('result-btn');
+        
+        panel.style.display = 'block';
+        if (win) {
+            msg.textContent = "你赢了！🎉";
+            btn.textContent = "继续";
+        } else {
+            msg.textContent = "你失败了！😭";
+            btn.textContent = "退出"; 
+        }
+        btn.onclick = function() {
+            fetch('/api/catchman_result', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({result: win ? 'win' : 'lose'})
+            })
+            .then(res => res.json())
+            .then(data => {
+                window.location.href = data.next_url || '/';
+            });
+        };
+    }
+  </script>
+</body>
+
+</html>

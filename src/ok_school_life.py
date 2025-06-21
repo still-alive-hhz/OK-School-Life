@@ -49,7 +49,7 @@ event_2_list = get_group_events("group_2")
 event_3_list = get_group_events("group_3")
 random_events = get_random_events()
 
-version = "v0.4.0"
+version = "v0.4.2"
 
 user_state = {
     "school": None,
@@ -82,6 +82,14 @@ def pick_result(result_value):
 
 @app.route('/')
 def home():
+    return render_template('index.html')
+
+@app.route('/catchman')
+def catchman():
+    return render_template('catchman.html')
+
+@app.route('/resume_random_event')
+def resume_random_event_page():
     return render_template('index.html')
 
 @app.route('/api/start_game', methods=['GET'])
@@ -283,10 +291,10 @@ def api_random_event():
             achievements.append(ach)
     if is_end or str(choice) in end_game_choices:
         user_state["random_used"].add(idx)
-        message = result + "\n游戏结束！"
+        message = result + "\n游戏结束！\n\n是否参加复活赛？"
         return jsonify({
             'message': message,
-            'game_over': True,
+            'revive_prompt': True,
             'achievements': achievements
         })
     user_state["random_used"].add(idx)
@@ -313,6 +321,62 @@ def api_random_event():
         'achievements': achievements
     })
 
+
+@app.route('/api/revive_game', methods=['POST'])
+def api_revive_game():
+    choice = request.json.get('choice')
+    if choice == 'yes':
+        user_state['in_revive_game'] = True
+        return jsonify({
+            'message': '开始复活赛！',
+            'redirect': '/catchman',
+            'revive_game': True
+        })
+    else:
+        return jsonify({
+            'message': '你选择了不参加复活赛，游戏结束',
+            'game_over': True
+        })
+
+@app.route('/api/catchman_result', methods=['POST'])
+def catchman_result():
+    data = request.get_json()
+    result = data.get('result')
+    win = data.get('win')
+    if result == 'win' or win is True:
+        # 复活赛成功，继续游戏，跳转到 resume_random_event
+        return jsonify({
+            'success': True,
+            'message': '复活赛成功，继续游戏',
+            'next_url': '/resume_random_event',
+            'achievements': achievements
+        })
+    else:
+        user_state.clear()
+        achievements.clear()
+        global score
+        score = 0
+        return jsonify({
+            'success': False,
+            'message': '复活赛失败，游戏结束',
+            'next_url': '/',
+            'achievements': []
+        })
+    
+@app.route('/api/resume_random_event', methods=['GET'])
+def api_resume_random_event():
+    idx = user_state.get("last_random_idx")
+    if idx is None or idx >= len(random_events):
+        return jsonify({'message': '无法打复活赛，游戏已结束。', 'game_over': True})
+    event = random_events[idx]
+    msg = event['question'] + get_contributor_str(event)
+    options = [{'key': k, 'text': v} for k, v in event['choices'].items()]
+    return jsonify({
+        'message': msg,
+        'options': options,
+        'next_event': 'random_event',
+        'achievements': achievements
+    })
 
 @app.route('/api/get_achievements', methods=['GET'])
 def api_get_achievements():
@@ -359,4 +423,4 @@ if __name__ == '__main__':
     )
     webview.start()
 
-# 2025.6.20 11:50, UTC+08:00
+# 2025.6.21 22:00, UTC+08:00

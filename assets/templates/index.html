@@ -64,7 +64,7 @@
         .half-btn,
         .start-btn {
             padding: 10px 24px;
-            background: #1976d2;
+            background: #43b981;
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -72,7 +72,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             cursor: pointer;
             transition: background 0.2s, box-shadow 0.2s;
-            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.08);
+            box-shadow: 0 2px 8px rgba(118, 201, 155, 0.08);
             outline: none;
             white-space: nowrap;
             /* 防止按钮文字换行 */
@@ -81,13 +81,13 @@
         button:hover,
         .half-btn:hover,
         .start-btn:hover {
-            background: #1565c0;
+            background: #43b981;
         }
 
         button:active,
         .half-btn:active,
         .start-btn:active {
-            background: #0d47a1;
+            background: #4DA771;
         }
 
         .achievements {
@@ -110,6 +110,12 @@
             font-family: 'Times New Roman', Times, serif;
             font-size: 12px;
             color: #333;
+        }
+
+        #more-modes-panel button {
+            padding: 10px 0;
+            font-size: 16px;
+            margin-bottom: 8px;
         }
 
         .main-btns {
@@ -181,127 +187,225 @@
         </div>
     </div>
     <script>
-            let currentApi = '/api/choose_start';
-            let lastResult = "";
+        let currentApi = '/api/choose_start';
+        let lastResult = "";
 
-            // 全局保存已显示的成就
-            let allAchievements = new Set();
+        // 全局保存已显示的成就
+        let allAchievements = new Set();
 
-            function updateUI(data) {
-                let questionText = data.message || '';
-                let lines = questionText.split('\n');
-                let resultText = '';
-                let nextQuestion = '';
+        function updateUI(data) {
+            if (data.redirect) {
+                window.location.href = data.redirect;
+                return;
+            }
 
-                if (lines.length > 1) {
-                    // 第一行是结果，其余是新问题
-                    resultText = lines[0].trim();
-                    nextQuestion = lines.slice(1).join('\n').trim();
-                } else {
-                    // 只有一行，全部当作新问题
-                    resultText = '';
-                    nextQuestion = questionText.trim();
-                }
+            let questionText = data.message || '';
+            let lines = questionText.split('\n');
+            let resultText = '';
+            let nextQuestion = '';
 
-                document.getElementById('result').textContent = resultText;
-                document.getElementById('message').textContent = nextQuestion;
+            if (data.revive_prompt) {
+                // 处理复活赛提示
+                document.getElementById('result').textContent = '';
+                document.getElementById('message').textContent = questionText;
 
                 const optionsDiv = document.getElementById('options');
-                const bottomOptionsDiv = document.getElementById('bottom-options');
                 optionsDiv.innerHTML = '';
-                bottomOptionsDiv.innerHTML = '';
 
-                if (data.options) {
-                    const bottomBtns = [];
-                    data.options.forEach((optionObj, idx) => {
-                        if (
-                            optionObj.text === '关于' ||
-                            optionObj.text === '退出' ||
-                            optionObj.text === '查看成就' ||
-                            optionObj.text === '清除数据'
-                        ) {
-                            bottomBtns.push({option: optionObj.text, key: optionObj.key});
-                        } else {
-                            const button = document.createElement('button');
-                            button.textContent = optionObj.text;
-                            if (optionObj.text === '开始游戏') {
-                                button.className = 'start-btn';
-                            }
-                            button.onclick = () => makeChoice(optionObj.key, data.start_event);
-                            optionsDiv.appendChild(button);
+                const reviveYes = document.createElement('button');
+                reviveYes.textContent = '是';
+                reviveYes.onclick = () => makeChoice('yes', null, true);
+
+                const reviveNo = document.createElement('button');
+                reviveNo.textContent = '否';
+                reviveNo.onclick = () => makeChoice('no', null, true);
+
+                optionsDiv.appendChild(reviveYes);
+                optionsDiv.appendChild(reviveNo);
+                return;
+            }
+
+            if (lines.length > 1) {
+                // 第一行是结果，其余是新问题
+                resultText = lines[0].trim();
+                nextQuestion = lines.slice(1).join('\n').trim();
+            } else {
+                // 只有一行，全部当作新问题
+                resultText = '';
+                nextQuestion = questionText.trim();
+            }
+
+            document.getElementById('result').textContent = resultText;
+            document.getElementById('message').textContent = nextQuestion;
+
+            const optionsDiv = document.getElementById('options');
+            const bottomOptionsDiv = document.getElementById('bottom-options');
+            optionsDiv.innerHTML = '';
+            bottomOptionsDiv.innerHTML = '';
+
+            if (data.options) {
+                const bottomBtns = [];
+                let hasStartBtn = false;
+                data.options.forEach((optionObj, idx) => {
+                    if (
+                        optionObj.text === '关于' ||
+                        optionObj.text === '退出' ||
+                        optionObj.text === '查看成就' ||
+                        optionObj.text === '清除数据'
+                    ) {
+                        bottomBtns.push({ option: optionObj.text, key: optionObj.key });
+                    } else if (optionObj.text === '开始游戏') {
+                        hasStartBtn = true;
+
+                        // 创建横向排列的容器
+                        const btnRow = document.createElement('div');
+                        btnRow.style.display = 'flex';
+                        btnRow.style.flexDirection = 'row';
+                        btnRow.style.justifyContent = 'center';
+                        btnRow.style.gap = '16px';
+                        btnRow.style.marginTop = '10px';
+
+                        // 开始按钮
+                        const startBtn = document.createElement('button');
+                        startBtn.textContent = '开始游戏';
+                        startBtn.className = 'start-btn';
+                        startBtn.style.flex = '1 1 0';
+                        startBtn.style.minWidth = '120px';
+                        startBtn.onclick = () => makeChoice(optionObj.key, data.start_event);
+
+                        // 更多模式按钮
+                        const moreBtn = document.createElement('button');
+                        moreBtn.textContent = '更多模式';
+                        moreBtn.className = 'start-btn';
+                        moreBtn.style.flex = '1 1 0';
+                        moreBtn.style.minWidth = '120px';
+                        moreBtn.onclick = showMoreModes;
+
+                        btnRow.appendChild(startBtn);
+                        btnRow.appendChild(moreBtn);
+                        optionsDiv.appendChild(btnRow);
+
+                        // 更多模式弹窗
+                        if (!document.getElementById('more-modes-panel')) {
+                            const panel = document.createElement('div');
+                            panel.id = 'more-modes-panel';
+                            panel.style.display = 'none';
+                            panel.style.position = 'fixed';
+                            panel.style.left = '0';
+                            panel.style.top = '0';
+                            panel.style.width = '100vw';
+                            panel.style.height = '100vh';
+                            panel.style.background = 'rgba(0,0,0,0.2)';
+                            panel.style.zIndex = '9999';
+                            panel.innerHTML = `
+            <div style="background:#fff;padding:30px 20px 20px 20px;border-radius:12px;max-width:300px;margin:100px auto 0 auto;box-shadow:0 2px 16px #0002;">
+                <h3 style="margin-top:0;">更多模式</h3>
+                <button id="catchman-btn" style="width:100%;margin-bottom:10px;">Catch Man</button>
+                <button id="close-more-modes" style="width:100%;">关闭</button>
+            </div>
+        `;
+                            document.body.appendChild(panel);
+                            document.getElementById('catchman-btn').onclick = function () {
+                                window.location.href = '/catchman';
+                            };
+                            document.getElementById('close-more-modes').onclick = function () {
+                                panel.style.display = 'none';
+                            };
                         }
-                    });
-                    // 渲染底部横排按钮
-                    bottomBtns.forEach(({option, key}) => {
+                    } else {
                         const button = document.createElement('button');
-                        button.textContent = option;
-                        button.className = 'half-btn';
-                        if (option === '关于') {
-                            button.onclick = showAbout;
-                        } else if (option === '退出') {
-                            button.onclick = () => makeChoice(key, data.start_event);
-                        } else if (option === '查看成就') {
-                            button.onclick = showAchievements;
-                        } else if (option === '清除数据') {
-                            button.onclick = confirmClearData;
+                        button.textContent = optionObj.text;
+                        if (optionObj.text === '开始游戏') {
+                            button.className = 'start-btn';
                         }
-                        bottomOptionsDiv.appendChild(button);
-                    });
-                }
-                if (data.game_over) {
-                    const button = document.createElement('button');
-                    button.textContent = '重新开始';
-                    button.onclick = () => window.location.reload();
-                    optionsDiv.appendChild(button);
-                }
-                // 累积显示成就
-                if (data.achievements) {
-                    const achievementsDiv = document.getElementById('achievements');
-                    const listDiv = document.getElementById('achievements-list');
-                    // 把新成就加入全局Set
-                    let hasNew = false;
-                    data.achievements.forEach(achievement => {
-                        if (!allAchievements.has(achievement)) hasNew = true;
-                        allAchievements.add(achievement);
-                    });
-                    // 只要有成就就渲染
-                    if (allAchievements.size > 0) {
-                        listDiv.innerHTML = '';
-                        Array.from(allAchievements).reverse().forEach(achievement => {
-                            const p = document.createElement('p');
-                            p.textContent = achievement;
-                            listDiv.appendChild(p);
-                        });
-                        achievementsDiv.style.display = 'block';
+                        button.onclick = () => makeChoice(optionObj.key, data.start_event);
+                        optionsDiv.appendChild(button);
                     }
+                });
+                // 如果没有“开始游戏”按钮，确保“更多模式”面板隐藏
+                if (!hasStartBtn && document.getElementById('more-modes-panel')) {
+                    document.getElementById('more-modes-panel').style.display = 'none';
                 }
-
-                // 控制封面图片显示
-                const coverImg = document.getElementById('cover-img');
-                if (currentApi === '/api/choose_start') {
-                    coverImg.style.display = 'block';
+                // 渲染底部横排按钮
+                bottomBtns.forEach(({ option, key }) => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.className = 'half-btn';
+                    if (option === '关于') {
+                        button.onclick = showAbout;
+                    } else if (option === '退出') {
+                        button.onclick = () => makeChoice(key, data.start_event);
+                    } else if (option === '查看成就') {
+                        button.onclick = showAchievements;
+                    } else if (option === '清除数据') {
+                        button.onclick = confirmClearData;
+                    }
+                    bottomOptionsDiv.appendChild(button);
+                });
+            }
+            if (data.game_over) {
+                if (window.location.pathname === '/resume_random_event') {
+                    // resume页面遇到game_over，自动回主页
+                    alert(data.message || "游戏结束！");
+                    window.location.href = '/';
+                    return;
+                }
+                const button = document.createElement('button');
+                button.textContent = '重新开始';
+                button.onclick = () => window.location.reload();
+                optionsDiv.appendChild(button);
+            }
+            // 累积显示成就
+            // 刷新成就栏（直接用后端返回的 achievements 覆盖显示）
+            if (data.achievements) {
+                const achievementsDiv = document.getElementById('achievements');
+                const listDiv = document.getElementById('achievements-list');
+                allAchievements = new Set(data.achievements); // 直接覆盖
+                listDiv.innerHTML = '';
+                if (data.achievements.length > 0) {
+                    data.achievements.slice().reverse().forEach(achievement => {
+                        const p = document.createElement('p');
+                        p.textContent = achievement;
+                        listDiv.appendChild(p);
+                    });
+                    achievementsDiv.style.display = 'block';
                 } else {
-                    coverImg.style.display = 'none';
+                    achievementsDiv.style.display = 'block';
+                    listDiv.innerHTML = '<p>暂无成就</p>';
                 }
             }
 
-            function makeChoice(choice, start_event=null) {
-                let body = {};
-                if (currentApi === '/api/choose_school') {
-                    body = { school: choice, start_event: start_event };
-                } else if (start_event) {
-                    body = { choice: choice, start_event: start_event };
-                } else {
-                    body = { choice: choice };
-                }
+            // 控制封面图片显示
+            const coverImg = document.getElementById('cover-img');
+            if (currentApi === '/api/choose_start') {
+                coverImg.style.display = 'block';
+            } else {
+                coverImg.style.display = 'none';
+            }
+        }
 
-                // 确保API调用顺序正确
-                const targetApi = currentApi;
-                fetch(targetApi, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body)
-                })
+        function makeChoice(choice, start_event = null, is_revive = false) {
+            let body = {};
+            if (is_revive) {
+                body = { choice: choice };
+                currentApi = '/api/revive_game';
+            } else if (currentApi === '/api/catchman_result') {
+                body = { result: choice };
+            } else if (currentApi === '/api/choose_school') {
+                body = { school: choice, start_event: start_event };
+            } else if (start_event) {
+                body = { choice: choice, start_event: start_event };
+            } else {
+                body = { choice: choice };
+            }
+
+            // 确保API调用顺序正确
+            const targetApi = currentApi;
+            fetch(targetApi, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            })
                 .then(response => response.json())
                 .then(data => {
                     updateUI(data);
@@ -313,36 +417,36 @@
                     }
                 })
                 .catch(error => console.error('Error:', error));
-            }
+        }
 
-            function showAchievements() {
-                fetch('/api/get_achievements')
+        function showAchievements() {
+            fetch('/api/get_achievements')
+                .then(response => response.json())
+                .then(data => {
+                    let msg = "当前得分：" + data.score + "\n";
+                    if (data.achievements.length > 0) {
+                        msg += "已获得成就：\n" + data.achievements.join("\n");
+                    } else {
+                        msg += "还没有获得任何成就。";
+                    }
+                    alert(msg);
+                });
+        }
+
+        function confirmClearData() {
+            // 弹出确认页面
+            if (confirm("确定要清除所有成就和分数吗？")) {
+                fetch('/api/clear_data', { method: 'POST' })
                     .then(response => response.json())
                     .then(data => {
-                        let msg = "当前得分：" + data.score + "\n";
-                        if (data.achievements.length > 0) {
-                            msg += "已获得成就：\n" + data.achievements.join("\n");
-                        } else {
-                            msg += "还没有获得任何成就。";
-                        }
-                        alert(msg);
+                        alert(data.message);
                     });
             }
+        }
 
-            function confirmClearData() {
-                // 弹出确认页面
-                if (confirm("确定要清除所有成就和分数吗？")) {
-                    fetch('/api/clear_data', {method: 'POST'})
-                        .then(response => response.json())
-                        .then(data => {
-                            alert(data.message);
-                        });
-                }
-            }
-
-            function showAbout() {
-                const aboutDiv = document.getElementById('about');
-                aboutDiv.innerHTML = `<pre style="white-space:pre-line;">About OK School Life
+        function showAbout() {
+            const aboutDiv = document.getElementById('about');
+            aboutDiv.innerHTML = `<pre style="white-space:pre-line;">About OK School Life
 Version 0.4
 At home, May 30, 2025
 
@@ -378,29 +482,43 @@ If you have any questions or suggestions, please feel free to contact me.
 
 Enjoy the game!</pre>
 <button onclick="hideAbout()">返回</button>`;
-                aboutDiv.style.display = 'block';
-                document.getElementById('result').style.display = 'none';
-                document.getElementById('message').style.display = 'none';
-                document.getElementById('options').style.display = 'none';
-                document.getElementById('achievements').style.display = 'none';
-                document.getElementById('bottom-options').style.display = 'none'; // 新增：隐藏底部按钮
-            }
+            aboutDiv.style.display = 'block';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('message').style.display = 'none';
+            document.getElementById('options').style.display = 'none';
+            document.getElementById('achievements').style.display = 'none';
+            document.getElementById('bottom-options').style.display = 'none'; // 新增：隐藏底部按钮
+        }
 
-            function hideAbout() {
-                document.getElementById('about').style.display = 'none';
-                document.getElementById('result').style.display = '';
-                document.getElementById('message').style.display = '';
-                document.getElementById('options').style.display = '';
-                document.getElementById('achievements').style.display = '';
-                document.getElementById('bottom-options').style.display = ''; // 新增：恢复底部按钮
-            }
+        function hideAbout() {
+            document.getElementById('about').style.display = 'none';
+            document.getElementById('result').style.display = '';
+            document.getElementById('message').style.display = '';
+            document.getElementById('options').style.display = '';
+            document.getElementById('achievements').style.display = '';
+            document.getElementById('bottom-options').style.display = ''; // 新增：恢复底部按钮
+        }
 
-            // 关键：页面加载时自动请求
-            window.onload = function() {
+        // 关键：页面加载时自动请求
+        window.onload = function () {
+            if (window.location.pathname === '/resume_random_event') {
+                currentApi = '/api/random_event'; // 关键：恢复到随机事件流程
+                fetch('/api/resume_random_event')
+                    .then(response => response.json())
+                    .then(data => updateUI(data));
+            } else {
+                currentApi = '/api/choose_start';
                 fetch('/api/start_game')
                     .then(response => response.json())
                     .then(data => updateUI(data));
-            };
-        </script>
-    </body>
-    </html>
+            }
+        };
+
+        function showMoreModes() {
+            const panel = document.getElementById('more-modes-panel');
+            if (panel) panel.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
