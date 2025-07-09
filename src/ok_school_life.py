@@ -377,12 +377,30 @@ def api_resume_random_event():
         'next_event': 'random_event',
         'achievements': achievements
     })
+# 假设 ALL_ACHIEVEMENTS 是所有成就的集合
+ALL_ACHIEVEMENTS = set()
+for group in event_data.get("events", {}).values():
+    for event in group:
+        for ach in event.get("achievements", {}).values():
+            if isinstance(ach, list):
+                for a in ach:
+                    ALL_ACHIEVEMENTS.add(a)
+            else:
+                ALL_ACHIEVEMENTS.add(ach)
+for event in event_data.get("random_events", []):
+    for ach in event.get("achievements", {}).values():
+        if isinstance(ach, list):
+            for a in ach:
+                ALL_ACHIEVEMENTS.add(a)
+        else:
+            ALL_ACHIEVEMENTS.add(ach)
 
-@app.route('/api/get_achievements', methods=['GET'])
+@app.route('/api/get_achievements')
 def api_get_achievements():
     return jsonify({
+        'achievements': achievements,
         'score': score,
-        'achievements': achievements
+        'total_achievements': len(ALL_ACHIEVEMENTS)
     })
 
 @app.route('/api/clear_data', methods=['POST'])

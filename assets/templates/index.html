@@ -164,6 +164,53 @@
             color: #71B988;
             font-weight: normal;
         }
+
+        #achievements-main {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        #achievements-box {
+            background: #e6f7ec;
+            border-radius: 16px;
+            padding: 32px 32px 24px 32px;
+            min-width: 260px;
+            max-width: 420px;
+            box-shadow: 0 2px 16px #43b98122;
+            border: 2px solid #43b981;
+            position: relative;
+        }
+
+        #achievements-stat {
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            font-size: 15px;
+            color: #2a5d3a;
+            font-weight: bold;
+        }
+
+        #achievements-list-main p {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #2a5d3a;
+        }
+
+        #close-achievements-btn {
+            background: #43b981;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            padding: 10px 24px;
+            cursor: pointer;
+        }
+
+        #close-achievements-btn:hover {
+            background: #e53935;
+        }
     </style>
 
 <body>
@@ -184,6 +231,18 @@
         <div id="achievements" class="achievements">
             <h3>成就</h3>
             <div id="achievements-list"></div>
+        </div>
+        <div id="score-bar" style="margin:10px 0 0 0;font-weight:bold;"></div>
+        <div id="achievements" style="display:none;">
+            <div id="achievements-list"></div>
+        </div>
+        <div id="achievements-main" style="display:none;">
+            <div id="achievements-box" style="position:relative;">
+                <div id="achievements-stat" style="position:absolute;top:18px;right:32px;font-size:15px;color:#2a5d3a;font-weight:bold;"></div>
+                <h3>成就</h3>
+                <div id="achievements-list-main"></div>
+                <button id="close-achievements-btn" style="margin-top:16px;">返回</button>
+            </div>
         </div>
     </div>
     <script>
@@ -336,7 +395,11 @@
                     } else if (option === '退出') {
                         button.onclick = () => makeChoice(key, data.start_event);
                     } else if (option === '查看成就') {
-                        button.onclick = showAchievements;
+                        console.log('创建查看成就按钮'); // 调试信息
+                        button.onclick = function () {
+                            console.log('查看成就按钮被点击'); // 调试信息
+                            showAchievements();
+                        };
                     } else if (option === '清除数据') {
                         button.onclick = confirmClearData;
                     }
@@ -382,6 +445,28 @@
             } else {
                 coverImg.style.display = 'none';
             }
+            // 刷新主界面成就栏
+            if (data.achievements) {
+                const achievementsDiv = document.getElementById('achievements');
+                const listDiv = document.getElementById('achievements-list');
+                listDiv.innerHTML = '';
+                if (data.achievements.length > 0) {
+                    data.achievements.slice().reverse().forEach(achievement => {
+                        const p = document.createElement('p');
+                        p.textContent = achievement;
+                        listDiv.appendChild(p);
+                    });
+                    achievementsDiv.style.display = 'block';
+                } else {
+                    achievementsDiv.style.display = 'none';
+                }
+            }
+            // 刷新主界面分数
+            if (typeof data.score !== 'undefined') {
+                const scoreDiv = document.getElementById('score-bar');
+                if (scoreDiv) scoreDiv.textContent = '分数：' + data.score;
+            }
+
         }
 
         function makeChoice(choice, start_event = null, is_revive = false) {
@@ -407,7 +492,7 @@
                 body: JSON.stringify(body)
             })
                 .then(response => response.json())
-                .then(data => {
+                .then (data => {
                     updateUI(data);
                     // 仅在成功响应后更新currentApi
                     if (data.next_event) {
@@ -423,14 +508,52 @@
             fetch('/api/get_achievements')
                 .then(response => response.json())
                 .then(data => {
-                    let msg = "当前得分：" + data.score + "\n";
+                    // 隐藏主内容
+                    document.querySelector('.game-container > #result').style.display = 'none';
+                    document.querySelector('.game-container > #message').style.display = 'none';
+                    document.getElementById('options').style.display = 'none';
+                    document.getElementById('achievements').style.display = 'none';
+                    document.getElementById('bottom-options').style.display = 'none';
+
+                    // 显示主成就栏
+                    const mainDiv = document.getElementById('achievements-main');
+                    const listDiv = document.getElementById('achievements-list-main');
+                    listDiv.innerHTML = '';
+
+                    // 统计信息
+                    let total = data.total_achievements || 0;
+                    let got = data.achievements.length;
+                    let statDiv = document.getElementById('achievements-stat');
+                    statDiv.textContent = `已获得 ${got} / ${total}`;
+
+                    const scoreP = document.createElement('p');
+                    scoreP.textContent = `当前得分: ${data.score}`;
+                    listDiv.appendChild(scoreP);
+
                     if (data.achievements.length > 0) {
-                        msg += "已获得成就：\n" + data.achievements.join("\n");
+                        data.achievements.forEach(achievement => {
+                            const p = document.createElement('p');
+                            p.textContent = achievement;
+                            listDiv.appendChild(p);
+                        });
                     } else {
-                        msg += "还没有获得任何成就。";
+                        const noAchievementsP = document.createElement('p');
+                        noAchievementsP.textContent = '还没有获得任何成就';
+                        listDiv.appendChild(noAchievementsP);
                     }
-                    alert(msg);
+
+                    mainDiv.style.display = 'flex';
                 });
+
+            // 绑定关闭按钮
+            document.getElementById('close-achievements-btn').onclick = function () {
+                document.getElementById('achievements-main').style.display = 'none';
+                document.querySelector('.game-container > #result').style.display = '';
+                document.querySelector('.game-container > #message').style.display = '';
+                document.getElementById('options').style.display = '';
+                document.getElementById('achievements').style.display = '';
+                document.getElementById('bottom-options').style.display = '';
+            };
         }
 
         function confirmClearData() {
